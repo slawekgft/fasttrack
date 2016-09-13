@@ -14,8 +14,6 @@ class AllegroItemsControllerIntTest extends Specification {
     @Autowired
     AllegroItemsController allegroItemsController;
 
-
-
     def "Request item for given e-mail"() {
         expect:
         allegroItemsController.requestItem(category,keyword,email).indexOf("Request registered") > -1 == poprawnaOdpowiedz

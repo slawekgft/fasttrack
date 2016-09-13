@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
 
 /**
@@ -34,10 +35,11 @@ public class AllegroItemsController {
 
     private static Logger log = LoggerFactory.getLogger(AllegroItemsController.class);
 
-    //hasło: KontoTestowe1,
-    //uż: slawek_test
-    //Klucz Allegro WebAPI: 	5a71c4b2
-
+    /*
+    Klucz Allegro WebAPI: 	5a71c4b2
+    Użytkownik: slawek_test
+    Hasło: KontoTestowe1,
+    */
     /*
     Klucz Sandbox WebAPI: 	sc5f646c
     Użytkownik: 	slawek_test
@@ -94,7 +96,7 @@ public class AllegroItemsController {
     private String itemReqests(Collection<ItemRequest> requests) {
         StringBuffer listItems = new StringBuffer();
         for(ItemRequest ir : requests) {
-            Collection<String> categories = allegroService.getCategoriesNames(ir.getCategories());
+            Collection<String> categories = allegroService.getCategoriesNames(new HashSet<>(ir.getCategories()));
             listItems.append(StringUtils.replace("<li>{0}</li>", "{0}", "'" + ir.getKeyword()+"', {"+StringUtils.join(categories,"|") + "}, " + ir.getStatus()));
         }
         return listItems.toString();

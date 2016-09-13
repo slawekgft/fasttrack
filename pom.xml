@@ -13,6 +13,15 @@
         <version>1.4.0.RELEASE</version>
     </parent>
 
+    <properties>
+        <java.version>1.6</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <cxf.version>2.7.5</cxf.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
     <profiles>
         <profile>
             <id>dev</id>
@@ -21,6 +30,12 @@
             </activation>
             <properties>
                 <allegro.wsdl.url>https://webapi.allegro.pl.webapisandbox.pl/service.php?wsdl</allegro.wsdl.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>prd</id>
+            <properties>
+                <allegro.wsdl.url>https://webapi.allegro.pl/service.php?wsdl</allegro.wsdl.url>
             </properties>
         </profile>
     </profiles>
@@ -48,16 +63,28 @@
             <version>3.4</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-spring</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+<!-- tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.easytesting</groupId>
@@ -72,10 +99,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
 
     <build>
         <plugins>
@@ -92,48 +115,19 @@
                         <goals>
                             <goal>wsimport</goal>
                         </goals>
-                        <configuration>
-                            <vmArgs>
-                                <vmArg>-Djavax.xml.accessExternalSchema = all</vmArg>
-                            </vmArgs>
-                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
+                    <vmArgs>
+                        <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                    </vmArgs>
                     <packageName>com.gft.ft.allegrointerface</packageName>
                     <wsdlUrls>
                         <wsdlUrl>${allegro.wsdl.url}</wsdlUrl>
                     </wsdlUrls>
+                    <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
                 </configuration>
-                <!--dependencies>
-                    <dependency>
-                        <groupId>org.jvnet.jax-ws-commons.spring</groupId>
-                        <artifactId>jaxws-spring</artifactId>
-                        <version>1.9</version>
-                    </dependency>
-                </dependencies-->
             </plugin>
-            <!--plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.12.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <schemaLanguage>WSDL</schemaLanguage>
-                    <generatePackage>com.gft.ft.allegrointerface</generatePackage>
-                    <schemas>
-                        <schema>
-                            <url>${allegro.wsdl.url}</url>
-                        </schema>
-                    </schemas>
-                </configuration>
-            </plugin-->
         </plugins>
     </build>
 

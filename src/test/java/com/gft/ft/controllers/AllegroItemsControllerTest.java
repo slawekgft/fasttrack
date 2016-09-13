@@ -24,9 +24,7 @@ import static com.gft.ft.tests.TestUtil.*;
 import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollection;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -113,7 +111,7 @@ public class AllegroItemsControllerTest {
         requests.add(createItemRequest().setEmail(VALID_EMAIL).setKeyword("misie").setCategories(asList(1,2,4)).build());
         requests.add(createItemRequest().setEmail(VALID_EMAIL).setKeyword("rycerz").setCategories(asList(1,2,4)).build());
         given(requestsService.getRequests(VALID_EMAIL)).willReturn(requests);
-        given(allegroService.getCategoriesNames(anyCollection())).willReturn(Arrays.asList("kat1", "kat2"));
+        given(allegroService.getCategoriesNames(anySet())).willReturn(Arrays.asList("kat1", "kat2"));
 
         //when
         final String requestsListInfo = allegroItemsController.checkRequests(VALID_EMAIL);
