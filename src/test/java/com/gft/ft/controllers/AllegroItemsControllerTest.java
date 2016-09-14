@@ -1,6 +1,7 @@
 package com.gft.ft.controllers;
 
 import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.ItemValidationException;
 import com.gft.ft.requests.RequestsService;
@@ -95,7 +96,7 @@ public class AllegroItemsControllerTest {
     @Test
     public void shouldRequestItemWithTechnicalProblem() throws Exception {
         //given
-        Mockito.doThrow(ItemValidationException.class).when(requestsService).saveRequest(any(ItemRequest.class));
+        Mockito.doThrow(DBOperationProblemException.class).when(requestsService).saveRequest(any(ItemRequest.class));
 
         //when
         String info = allegroItemsController.requestItem(CAT_BOOKS, "długa droga", "any@any.com");

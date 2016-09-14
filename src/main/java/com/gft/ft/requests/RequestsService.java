@@ -1,6 +1,7 @@
 package com.gft.ft.requests;
 
 import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.ItemRequestStatus;
 import com.gft.ft.commons.ItemValidationException;
@@ -32,11 +33,15 @@ public class RequestsService {
     @Autowired
     private RequestsDAO requestsDAO;
 
-    public void saveRequest(ItemRequest itemRequest) {
+    public void saveRequest(ItemRequest itemRequest) throws DBOperationProblemException {
         log.debug("saveRequest " + itemRequest);
-        ItemRequestEntity itemRequestEntity = mapRequest2Entity(itemRequest);
-
-        requestsDAO.save(itemRequestEntity);
+        try {
+            ItemRequestEntity itemRequestEntity = mapRequest2Entity(itemRequest);
+            requestsDAO.save(itemRequestEntity);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new DBOperationProblemException(e);
+        }
     }
 
     private ItemRequestEntity mapRequest2Entity(ItemRequest itemRequest) {

@@ -1,6 +1,7 @@
 package com.gft.ft.controllers;
 
 import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.ItemValidationException;
 import com.gft.ft.requests.RequestsService;
@@ -65,7 +66,11 @@ public class AllegroItemsController {
         String info = getMessage(WEB_ITEMS_REQUEST_REGISTERED_MSG);
         final Collection<Integer> categoriesIds = allegroService.findCategoriesIds(categoryNameFilter);
         final ItemRequest itemRequest = new ItemRequest(email, itemName, categoriesIds);
-        requestsService.saveRequest(itemRequest);
+        try {
+            requestsService.saveRequest(itemRequest);
+        } catch (DBOperationProblemException e) {
+            info = getMessage(WEB_ITEMS_REQUEST_PROBLEM_MSG);
+        }
 
         return paragraph(info);
     }
