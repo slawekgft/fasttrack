@@ -1,11 +1,11 @@
 package com.gft.ft.allegro
 
+import com.gft.ft.tests.TestUtil
+import org.fest.assertions.Assertions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
-
-import java.util.stream.Collectors
 
 /**
  * Created by e-srwn on 2016-09-13.
@@ -16,6 +16,19 @@ class AllegroServiceIntTest extends Specification {
 
     @Autowired
     def AllegroService allegroService
+
+    def "FindItemsForCategoryAndKeyword"() {
+        setup:
+        def itemRequest = TestUtil.createItemRequest().setEmail("").setKeyword(key).setCategories(cats).build()
+
+        expect:
+        def items = allegroService.findItemsForCategoryAndKeyword(itemRequest)
+        Assertions.assertThat(items).isNotNull()
+
+        where:
+        key        | cats
+        "TEST"     | [2]
+    }
 
     def "GetCategoriesNames"() {
         setup:

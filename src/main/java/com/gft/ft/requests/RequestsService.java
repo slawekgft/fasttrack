@@ -1,21 +1,23 @@
 package com.gft.ft.requests;
 
 import com.gft.ft.allegro.AllegroService;
-import com.gft.ft.commons.DBOperationProblemException;
-import com.gft.ft.commons.ItemRequest;
-import com.gft.ft.commons.ItemRequestStatus;
-import com.gft.ft.commons.ItemValidationException;
+import com.gft.ft.allegrointerface.ItemsListType;
+import com.gft.ft.commons.*;
+import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.daos.RequestsDAO;
 import com.gft.ft.daos.ent.ItemRequestEntity;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -30,11 +32,21 @@ public class RequestsService {
 
     private static final Logger log = LoggerFactory.getLogger(RequestsService.class);
 
+    @Value("${allegro.items_limit}")
+    private Integer itemsLimit;
+
     @Autowired
     private RequestsDAO requestsDAO;
 
-    public void saveRequest(ItemRequest itemRequest) throws DBOperationProblemException {
-        log.debug("saveRequest " + itemRequest);
+    @Autowired
+    private AllegroService allegroService;
+
+    public void registerRequest(ItemRequest itemRequest) throws DBOperationProblemException, TooMuchItemsFoundException {
+        log.debug("registerRequest " + itemRequest);
+        Set<Item> availableItems = allegroService.findItemsForCategoryAndKeyword(itemRequest);
+        if (CollectionUtils.size(availableItems) > itemsLimit) {
+            throw new TooMuchItemsFoundException(availableItems);
+        }
         try {
             ItemRequestEntity itemRequestEntity = mapRequest2Entity(itemRequest);
             requestsDAO.save(itemRequestEntity);
@@ -71,9 +83,9 @@ public class RequestsService {
                 final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
                 ItemRequest itemRequest =
                         new ItemRequest(itemRequestEntity.getEmail(),
-                                        itemRequestEntity.getKeyword(),
-                                        categories,
-                                        status);
+                                itemRequestEntity.getKeyword(),
+                                categories,
+                                status);
 
                 return itemRequest;
             }

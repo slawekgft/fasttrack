@@ -38,4 +38,25 @@ public class ItemRequest {
     public ItemRequestStatus getStatus() {
         return status;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ItemRequest that = (ItemRequest) o;
+
+        if (!email.equals(that.email)) return false;
+        if (!keyword.equals(that.keyword)) return false;
+        return categories.equals(that.categories);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = email.hashCode();
+        result = 31 * result + keyword.hashCode();
+        result = 31 * result + categories.hashCode();
+        return result;
+    }
 }

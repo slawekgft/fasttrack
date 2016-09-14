@@ -3,7 +3,7 @@ package com.gft.ft.controllers;
 import com.gft.ft.allegro.AllegroService;
 import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
-import com.gft.ft.commons.ItemValidationException;
+import com.gft.ft.commons.TooMuchItemsFoundException;
 import com.gft.ft.requests.RequestsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Collection;
@@ -58,18 +57,19 @@ public class AllegroItemsController {
 
     @RequestMapping(value = "/find", produces = MediaType.TEXT_HTML_VALUE)
     public String requestItem(@Size(min = 3) @RequestParam(value = "cat") String categoryNameFilter,
-                              @Size(min = 3) @RequestParam(value = "name") String itemName,
+                              @Size(min = 3) @RequestParam(value = "name") String keyword,
                               @Pattern(regexp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,63}$") @RequestParam(value = "email") String email) {
 
         log.debug("requestItem for " + email);
-
         String info = getMessage(WEB_ITEMS_REQUEST_REGISTERED_MSG);
         final Collection<Integer> categoriesIds = allegroService.findCategoriesIds(categoryNameFilter);
-        final ItemRequest itemRequest = new ItemRequest(email, itemName, categoriesIds);
+        final ItemRequest itemRequest = new ItemRequest(email, keyword, categoriesIds);
         try {
-            requestsService.saveRequest(itemRequest);
+            requestsService.registerRequest(itemRequest);
         } catch (DBOperationProblemException e) {
             info = getMessage(WEB_ITEMS_REQUEST_PROBLEM_MSG);
+        } catch (TooMuchItemsFoundException e) {
+            log.info(e.getMessage());
         }
 
         return paragraph(info);

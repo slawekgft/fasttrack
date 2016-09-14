@@ -1,22 +1,19 @@
 package com.gft.ft.allegro;
 
 import com.gft.ft.allegrointerface.*;
-import org.apache.commons.lang3.StringUtils;
+import com.gft.ft.commons.ItemRequest;
+import com.gft.ft.commons.allegro.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 
 /**
@@ -26,16 +23,18 @@ import static org.apache.commons.lang3.StringUtils.upperCase;
 public class AllegroService {
 
     private static final Logger log = LoggerFactory.getLogger(AllegroService.class);
+    public static final String CATEGORY_FILTER_NAME = "category";
+    public static final String SEARCH_FILTER_NAME = "search";
 
     private @Value("${allegro.ws.webapi_key}") String apiKey;
     private @Value("${allegro.ws.country_id}") Integer countryId;
 
-    private ServiceService allegroService;
+    private ServiceService allegroWS;
     private ObjectFactory objectFactory;
 
     @PostConstruct
     public void init() {
-        allegroService = new ServiceService();
+        allegroWS = new ServiceService();
         objectFactory = new AllegroObjectFactory(apiKey, countryId);
     }
 
@@ -43,6 +42,51 @@ public class AllegroService {
         final List<CatInfoType> catInfoTypes = getCatsInfo();
 
         return catInfoTypes.stream().filter(filterByName(categoryNameFilter)).map(categoryId()).collect(Collectors.toList());
+    }
+
+    public Collection<String> getCategoriesNames(Set<Integer> categoriesIds) {
+        log.debug("getCategoriesNames");
+
+        final List<CatInfoType> catInfoTypes = getCatsInfo();
+
+        return catInfoTypes.stream().filter(filterByIds(categoriesIds)).map(categoryName()).collect(Collectors.toList());
+    }
+
+    public Set<Item> findItemsForCategoryAndKeyword(ItemRequest itemRequest) {
+        Set<Item> foundItems = new HashSet<>();
+        final ServicePort servicePort = allegroWS.getServicePort();
+        final DoGetItemsListRequest doGetItemsListRequest = objectFactory.createDoGetItemsListRequest();
+        for(Integer categoryId : itemRequest.getCategories()) {
+            final ArrayOfFilteroptionstype arrayOfFilteroptionstype = objectFactory.createArrayOfFilteroptionstype();
+            arrayOfFilteroptionstype.getItem().addAll(filterItems()
+                    .addSearch(CATEGORY_FILTER_NAME, Integer.toString(categoryId))
+                    .addSearch(SEARCH_FILTER_NAME, itemRequest.getKeyword())
+                    .build());
+            doGetItemsListRequest.setFilterOptions(arrayOfFilteroptionstype);
+            final DoGetItemsListResponse doGetItemsListResponse = servicePort.doGetItemsList(doGetItemsListRequest);
+
+            if (doGetItemsListResponse.getItemsCount() > 0) {
+                foundItems.addAll(doGetItemsListResponse.getItemsList().getItem().stream().map(map2Item()).collect(Collectors.toSet()));
+            }
+        }
+
+        return foundItems;
+    }
+
+    private Function<? super ItemsListType, ? extends Item> map2Item() {
+        return new Function<ItemsListType, Item>() {
+            @Override
+            public Item apply(ItemsListType itemsListType) {
+                Item item = new Item();
+                item.setId(itemsListType.getItemId());
+
+                return item;
+            }
+        };
+    }
+
+    private FilterOptionsBuilder filterItems() {
+        return new FilterOptionsBuilder();
     }
 
     private Function<? super CatInfoType, ? extends Integer> categoryId() {
@@ -63,16 +107,8 @@ public class AllegroService {
         };
     }
 
-    public Collection<String> getCategoriesNames(Set<Integer> categoriesIds) {
-        log.debug("getCategoriesNames");
-
-        final List<CatInfoType> catInfoTypes = getCatsInfo();
-
-        return catInfoTypes.stream().filter(filterByIds(categoriesIds)).map(categoryName()).collect(Collectors.toList());
-    }
-
     private List<CatInfoType> getCatsInfo() {
-        final ServicePort servicePort = allegroService.getServicePort();
+        final ServicePort servicePort = allegroWS.getServicePort();
         final DoGetCatsDataRequest doGetCatsDataRequest = objectFactory.createDoGetCatsDataRequest();
         final DoGetCatsDataResponse doGetCatsDataResponse = servicePort.doGetCatsData(doGetCatsDataRequest);
         return doGetCatsDataResponse.getCatsList().getItem();
@@ -94,5 +130,30 @@ public class AllegroService {
                 return catInfoType.getCatName();
             }
         };
+    }
+
+    private class FilterOptionsBuilder {
+        private List<FilterOptionsType> filters;
+
+        public FilterOptionsBuilder() {
+            this.filters = new ArrayList<>();
+        }
+
+        public FilterOptionsBuilder addSearch(String id, String ... value) {
+            FilterOptionsType filter = objectFactory.createFilterOptionsType();
+            filter.setFilterId(id);
+            ArrayOfString filterValues = objectFactory.createArrayOfString();
+            for (String v : value) {
+                filterValues.getItem().add(v);
+            }
+            filter.setFilterValueId(filterValues);
+            filters.add(filter);
+
+            return this;
+        }
+
+        public List<FilterOptionsType> build() {
+            return filters;
+        }
     }
 }
