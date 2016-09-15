@@ -84,16 +84,6 @@ public class ItemsService {
         };
     }
 
-    private Consumer<? super ItemRequest> checkItems() {
-        return new Consumer<ItemRequest>() {
-            @Override
-            public void accept(ItemRequest itemRequest) {
-                final Set<Item> itemsForCategoryAndKeyword = allegroService.findItemsForCategoryAndKeyword(itemRequest);
-                itemsForCategoryAndKeyword.forEach(processItemRequest());
-            }
-        };
-    }
-
     private Consumer<? super Item> processItemRequest() {
         return new Consumer<Item>() {
             @Override
