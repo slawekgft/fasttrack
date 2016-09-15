@@ -5,7 +5,6 @@ import com.gft.ft.daos.ent.ItemRequestEntity;
 import com.gft.ft.daos.repos.ItemRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,5 +39,9 @@ public class RequestsDAO {
 
     public Collection<ItemRequestEntity> getFailedItemsRequestsForUser(String email) {
         return itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, ItemRequestStatus.ERROR.ordinal());
+    }
+
+    public Collection<ItemRequestEntity> getValidItemsRequestsAllUsers() {
+        return itemRequestRepository.findByStatusOrderByEmailAscCreateDateDesc(ItemRequestStatus.IN_PROGRESS.ordinal());
     }
 }

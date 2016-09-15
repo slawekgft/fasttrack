@@ -3,12 +3,14 @@ package com.gft.ft.controllers
 import com.gft.ft.tests.TestUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
 /**
  * Created by e-srwn on 2016-09-12.
  */
-@ContextConfiguration(locations = "classpath:app-config-rest.xml")
+@ContextConfiguration(locations = "classpath:app-config-empty.xml")
+@TestPropertySource(["/application.properties", "/application-dev.properties"])
 class AllegroItemsControllerIntTest extends Specification {
 
     @Autowired
@@ -16,14 +18,24 @@ class AllegroItemsControllerIntTest extends Specification {
 
     def "Request item for given e-mail"() {
         expect:
-        allegroItemsController.requestItem(category,keyword,email).indexOf("Request registered") > -1 == poprawnaOdpowiedz
+        allegroItemsController.requestItem(category,keyword,email).indexOf("Request registered") > -1 == registeredItem
 
         where:
-        category        | keyword   |   email           || poprawnaOdpowiedz
+        category        | keyword   |   email           || registeredItem
         "Książ"         | "Rzym"    |   "user1@dom.com" || true
         "Książki"       | "wódz starożytność"    |   "user1@dom.com" || true
         "Film_Muzyka"   | "Mozart"    |   "user2@other.dom.com" || true
         "Komiks"        | "fantasy"   |   "user3@dom.com" || true
+    }
+
+    def "Request item of too much items"() {
+        expect:
+        allegroItemsController.requestItem(category,keyword,email).indexOf("Many items are available now") > -1 == tooManyItemsFound
+
+        where:
+        category        | keyword   |   email                   || tooManyItemsFound
+        "Komputery"     | "TEST"    |   "user1@dom.com"         || true
+        "Film"          | "Mozart"  |   "user1@other.dom.com"   || false
     }
 
     def "Check items for e-mail"() {

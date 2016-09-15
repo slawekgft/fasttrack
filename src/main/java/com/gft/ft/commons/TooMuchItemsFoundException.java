@@ -13,4 +13,8 @@ public class TooMuchItemsFoundException extends Exception {
     public TooMuchItemsFoundException(Collection<Item> items) {
         items.addAll(items);
     }
+
+    public Collection<Item> getItems() {
+        return items;
+    }
 }

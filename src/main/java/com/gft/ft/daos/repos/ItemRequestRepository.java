@@ -10,4 +10,5 @@ import java.util.Collection;
  */
 public interface ItemRequestRepository extends CrudRepository<ItemRequestEntity, Long> {
     Collection<ItemRequestEntity> findByEmailAndStatusOrderByCreateDateDesc(String email, int status);
+    Collection<ItemRequestEntity> findByStatusOrderByEmailAscCreateDateDesc(int status);
 }

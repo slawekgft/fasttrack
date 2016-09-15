@@ -15,7 +15,7 @@ import spock.lang.Specification
 class AllegroServiceIntTest extends Specification {
 
     @Autowired
-    def AllegroService allegroService
+    AllegroService allegroService
 
     def "FindItemsForCategoryAndKeyword"() {
         setup:

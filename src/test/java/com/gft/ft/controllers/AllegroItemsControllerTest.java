@@ -4,7 +4,6 @@ import com.gft.ft.allegro.AllegroService;
 import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.TooMuchItemsFoundException;
-import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.requests.RequestsService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -23,6 +22,7 @@ import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -31,8 +31,10 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class AllegroItemsControllerTest {
 
-    private static final String REQUEST_PROBLEM_MSG = "Request problem";
     public static final List<Integer> DEFAULT_CATEGORIES = Arrays.asList(1, 7, 9);
+    public static final String ITEM_ID_MSG = "Item id:";
+    private static final String REQUEST_PROBLEM_MSG = "Request problem";
+    private static final String MANY_ITEMS_ARE_AVAILABLE_NOW_MSG = "Many items are available now:";
 
     @InjectMocks
     private AllegroItemsController allegroItemsController = new AllegroItemsController();
@@ -48,6 +50,8 @@ public class AllegroItemsControllerTest {
 
     @Before
     public void setUp() throws Exception {
+        given(messageSource.getMessage(AllegroItemsController.WEB_ITEMS_LABEL_ITEM_MSG, null, Locale.US)).willReturn(ITEM_ID_MSG);
+        given(messageSource.getMessage(AllegroItemsController.WEB_ITEMS_TOO_MANY_ITEMS_MSG, null, Locale.US)).willReturn(MANY_ITEMS_ARE_AVAILABLE_NOW_MSG);
         given(messageSource.getMessage(AllegroItemsController.WEB_ITEMS_REQUEST_REGISTERED_MSG, null, Locale.US)).willReturn(REQUEST_REGISTERED_MSG);
         given(messageSource.getMessage(AllegroItemsController.WEB_ITEMS_REQUEST_PROBLEM_MSG, null, Locale.US)).willReturn(REQUEST_PROBLEM_MSG);
         given(allegroService.findCategoriesIds(anyString())).willReturn(DEFAULT_CATEGORIES);
@@ -119,23 +123,16 @@ public class AllegroItemsControllerTest {
         verify(requestsService).getRequests(VALID_EMAIL);
     }
 
-    @Test(expected = TooMuchItemsFoundException.class)
+    @Test
     public void shouldRequestBookItemTooMuchItemsFound() throws Exception {
         //given
-        given(allegroService.findItemsForCategoryAndKeyword(any(ItemRequest.class))).willReturn(set(20));
+        doThrow(new TooMuchItemsFoundException(set(4))).when(requestsService).registerRequest(any(ItemRequest.class));
 
         //when
-        allegroItemsController.requestItem(CAT_BOOKS_COM, "droga", VALID_EMAIL);
+        final String response = allegroItemsController.requestItem(CAT_BOOKS_COM, "popularny przedmiot", VALID_EMAIL);
 
         //then
-    }
-
-    private Set<Item> set(int count) {
-        Set<Item> set = new HashSet<>();
-        for(int i=0; i<count; i++) {
-            set.add(createItem().setId((long) i).build());
-        }
-        return set;
+        assertThat(response).contains(MANY_ITEMS_ARE_AVAILABLE_NOW_MSG);
     }
 
     private int numberOfLines(String requestsListInfo) {

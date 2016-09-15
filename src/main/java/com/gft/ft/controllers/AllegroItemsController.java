@@ -4,6 +4,7 @@ import com.gft.ft.allegro.AllegroService;
 import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.TooMuchItemsFoundException;
+import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.requests.RequestsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,8 @@ public class AllegroItemsController {
     public static final String WEB_ITEMS_REQUEST_PROBLEM_MSG = "web.items.registration_problem";
     public static final String WEB_ITEMS_REQUEST_REGISTERED_MSG = "web.items.request_registered";
     public static final String WEB_ITEMS_NO_REQUESTS_MSG = "web.items.no_requests";
+    public static final String WEB_ITEMS_TOO_MANY_ITEMS_MSG = "web.items.too_many_items";
+    public static final String WEB_ITEMS_LABEL_ITEM_MSG = "web.items.label.item";
 
     private static Logger log = LoggerFactory.getLogger(AllegroItemsController.class);
 
@@ -69,10 +72,22 @@ public class AllegroItemsController {
         } catch (DBOperationProblemException e) {
             info = getMessage(WEB_ITEMS_REQUEST_PROBLEM_MSG);
         } catch (TooMuchItemsFoundException e) {
-            log.info(e.getMessage());
+            info = prepareListInfo(getMessage(WEB_ITEMS_TOO_MANY_ITEMS_MSG), e.getItems());
         }
 
         return paragraph(info);
+    }
+
+    private String prepareListInfo(String message, Collection<Item> items) {
+        final StringBuffer sb = new StringBuffer(message);
+        if(CollectionUtils.size(items) > 0) {
+            StringBuffer listOfItems = new StringBuffer();
+            for(Item it : items) {
+                listElem(listOfItems, getMessage(WEB_ITEMS_LABEL_ITEM_MSG) + " " + it.getId());
+            }
+            sb.append(list(listOfItems.toString()));
+        }
+        return sb.toString();
     }
 
     @RequestMapping(value = "/check", produces = MediaType.TEXT_HTML_VALUE)
@@ -102,8 +117,13 @@ public class AllegroItemsController {
         StringBuffer listItems = new StringBuffer();
         for(ItemRequest ir : requests) {
             Collection<String> categories = allegroService.getCategoriesNames(new HashSet<>(ir.getCategories()));
-            listItems.append(StringUtils.replace("<li>{0}</li>", "{0}", "'" + ir.getKeyword()+"', {"+StringUtils.join(categories,"|") + "}, " + ir.getStatus()));
+            final String replacement = "'" + ir.getKeyword() + "', {" + StringUtils.join(categories, "|") + "}, " + ir.getStatus();
+            listElem(listItems, replacement);
         }
         return listItems.toString();
+    }
+
+    private void listElem(StringBuffer out, String listItem) {
+        out.append(StringUtils.replace("<li>{0}</li>", "{0}", listItem));
     }
 }

@@ -2,6 +2,7 @@ package com.gft.ft.daos;
 
 import com.gft.ft.commons.ItemRequestStatus;
 import com.gft.ft.daos.ent.ItemRequestEntity;
+import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
+import static com.gft.ft.commons.ItemRequestStatus.ERROR;
+import static com.gft.ft.commons.ItemRequestStatus.FINISHED;
 import static com.gft.ft.commons.ItemRequestStatus.IN_PROGRESS;
 import static com.gft.ft.tests.TestUtil.CAT_BOOKS;
 import static com.gft.ft.tests.TestUtil.VALID_EMAIL;
@@ -28,6 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RequestsDAOTest {
 
     public static final String KW1 = "Gotowanie";
+    public static final String KW2 = "Sport";
+    public static final String KW3 = "Motoryzacja";
 
     @Autowired
     private RequestsDAO requestsDAO;
@@ -53,12 +58,61 @@ public class RequestsDAOTest {
     }
 
     @Test
-    public void shouldGetValidItemsRequestsForUser() throws Exception {
+    public void shouldGetClosedItemsRequestsForUser() throws Exception {
         //given
+        ItemRequestEntity itemRequest1 =
+                createItemRequestEntity()
+                        .setEmail(VALID_EMAIL)
+                        .setKeyword(KW1)
+                        .setStatus(FINISHED.ordinal())
+                        .setCategories(CAT_BOOKS).build();
+        ItemRequestEntity itemRequest2 =
+                createItemRequestEntity()
+                        .setEmail(VALID_EMAIL)
+                        .setKeyword(KW2)
+                        .setStatus(ERROR.ordinal())
+                        .setCategories(CAT_BOOKS).build();
+        requestsDAO.save(itemRequest1);
+        requestsDAO.save(itemRequest2);
 
         // when
+        final Collection<ItemRequestEntity> itemsRequestsForUser = requestsDAO.getClosedItemsRequestsForUser(VALID_EMAIL);
 
         // then
+        assertThat(itemsRequestsForUser).hasSize(1);
+    }
+
+    @Test
+    public void shouldGetAllItemsRequests() throws Exception {
+        //given
+        ItemRequestEntity itemRequest1 =
+                createItemRequestEntity()
+                        .setEmail(VALID_EMAIL)
+                        .setKeyword(KW1)
+                        .setStatus(FINISHED.ordinal())
+                        .setCategories(CAT_BOOKS).build();
+        ItemRequestEntity itemRequest2 =
+                createItemRequestEntity()
+                        .setEmail(VALID_EMAIL)
+                        .setKeyword(KW2)
+                        .setStatus(ERROR.ordinal())
+                        .setCategories(CAT_BOOKS).build();
+        ItemRequestEntity itemRequest3 =
+                createItemRequestEntity()
+                        .setEmail(VALID_EMAIL)
+                        .setKeyword(KW3)
+                        .setStatus(IN_PROGRESS.ordinal())
+                        .setCategories(CAT_BOOKS).build();
+        requestsDAO.save(itemRequest1);
+        requestsDAO.save(itemRequest2);
+        requestsDAO.save(itemRequest3);
+
+        // when
+        final Collection<ItemRequestEntity> allValidItemsRequests = requestsDAO.getValidItemsRequestsAllUsers();
+
+        // then
+        assertThat(allValidItemsRequests).hasSize(1);
+        assertThat(allValidItemsRequests.iterator().next().getKeyword()).isEqualTo(KW3);
     }
 
 }

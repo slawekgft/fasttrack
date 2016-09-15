@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +42,7 @@ public class RequestsService {
     @Autowired
     private AllegroService allegroService;
 
+    @Transactional
     public void registerRequest(ItemRequest itemRequest) throws DBOperationProblemException, TooMuchItemsFoundException {
         log.debug("registerRequest " + itemRequest);
         Set<Item> availableItems = allegroService.findItemsForCategoryAndKeyword(itemRequest);
@@ -73,6 +75,14 @@ public class RequestsService {
         return itemRequests;
     }
 
+    public Collection<ItemRequest> getAllValidRequests() {
+        log.debug("getAllValidRequests");
+        Collection<ItemRequest> itemRequests = new ArrayList<>();
+        itemRequests.addAll(requestsDAO.getValidItemsRequestsAllUsers().stream().map(mapEntity2ItemRequest()).collect(toList()));
+
+        return itemRequests;
+    }
+
     private Function<ItemRequestEntity, ItemRequest> mapEntity2ItemRequest() {
         return new Function<ItemRequestEntity, ItemRequest>() {
             @Override
@@ -99,5 +109,9 @@ public class RequestsService {
                 return Integer.parseInt(value);
             }
         };
+    }
+
+    public void invalidateRequests(Set<ItemRequest> processedRequests) {
+
     }
 }

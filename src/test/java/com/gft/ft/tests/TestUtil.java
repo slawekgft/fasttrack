@@ -4,8 +4,7 @@ import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.daos.ent.ItemRequestEntity;
 
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by e-srwn on 2016-09-09.
@@ -15,6 +14,7 @@ public class TestUtil {
     public static final String REQUEST_REGISTERED_MSG = "Request registered";
 
     public static final String VALID_EMAIL = "test@gft.test.com";
+    public static final String VALID_OTHER_EMAIL = "test2@gft.test.com";
     public static final String CAT_BOOKS_COM = "Książki i Komiksy";
     public static final String CAT_BOOKS = "Książki";
 
@@ -67,6 +67,13 @@ public class TestUtil {
 
         public ItemRequestBuilder setCategories(final Collection<Integer> categories) {
             this.categories = categories;
+            return this;
+        }
+
+        public ItemRequestBuilder setCategories(final Integer ... categories) {
+            if(null != categories) {
+                this.categories = Arrays.asList(categories);
+            }
             return this;
         }
 
@@ -123,6 +130,14 @@ public class TestUtil {
 
     public static final boolean registeredItem(String info) {
         return info.indexOf(REQUEST_REGISTERED_MSG) > -1;
+    }
+
+    public static Set<Item> set(int count) {
+        Set<Item> set = new HashSet<>();
+        for(int i=0; i<count; i++) {
+            set.add(createItem().setId((long) (i + 31) * set.hashCode()).build());
+        }
+        return set;
     }
 
 }
