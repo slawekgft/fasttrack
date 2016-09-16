@@ -15,12 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -58,14 +56,6 @@ public class RequestsService {
         }
     }
 
-    private ItemRequestEntity mapRequest2Entity(ItemRequest itemRequest) {
-        String categories = StringUtils.join(itemRequest.getCategories(), ",");
-        ItemRequestEntity itemRequestEntity = new ItemRequestEntity(itemRequest.getEmail(), itemRequest.getKeyword(), categories);
-        itemRequestEntity.setStatus(itemRequest.getStatus().ordinal());
-
-        return itemRequestEntity;
-    }
-
     public Collection<ItemRequest> getRequests(String email) {
         log.debug("getRequests for " + email);
         Collection<ItemRequest> itemRequests = new ArrayList<>();
@@ -77,10 +67,39 @@ public class RequestsService {
 
     public Collection<ItemRequest> getAllValidRequests() {
         log.debug("getAllValidRequests");
-        Collection<ItemRequest> itemRequests = new ArrayList<>();
-        itemRequests.addAll(requestsDAO.getValidItemsRequestsAllUsers().stream().map(mapEntity2ItemRequest()).collect(toList()));
+        return requestsDAO.getValidItemsRequestsAllUsers().stream().map(mapEntity2ItemRequest()).collect(toList());
+    }
 
-        return itemRequests;
+    @Transactional
+    public void invalidateRequests(Set<ItemRequest> requests) {
+        requestsDAO.invalidateRequests(requests.stream().mapToLong(mapRequests2Ids()).boxed().collect(Collectors.toList()));
+    }
+
+    @Transactional
+    public void invalidateOldRequests() {
+        requestsDAO.invalidateRequestsOlderThan(30l);
+    }
+
+    @Transactional
+    public void validateNewRequests() {
+        requestsDAO.validateNewRequests();
+    }
+
+    private ToLongFunction<ItemRequest> mapRequests2Ids() {
+        return new ToLongFunction<ItemRequest>(){
+            @Override
+            public long applyAsLong(ItemRequest itemRequest) {
+                return itemRequest.getId();
+            }
+        };
+    }
+
+    private ItemRequestEntity mapRequest2Entity(ItemRequest itemRequest) {
+        String categories = StringUtils.join(itemRequest.getCategories(), ",");
+        ItemRequestEntity itemRequestEntity = new ItemRequestEntity(itemRequest.getEmail(), itemRequest.getKeyword(), categories);
+        itemRequestEntity.setStatus(itemRequest.getStatus().ordinal());
+
+        return itemRequestEntity;
     }
 
     private Function<ItemRequestEntity, ItemRequest> mapEntity2ItemRequest() {
@@ -92,10 +111,12 @@ public class RequestsService {
                                 .mapToInt(map2Int()).boxed().collect(toList());
                 final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
                 ItemRequest itemRequest =
-                        new ItemRequest(itemRequestEntity.getEmail(),
-                                itemRequestEntity.getKeyword(),
-                                categories,
-                                status);
+                        new ItemRequest(itemRequestEntity.getId(),
+                                        itemRequestEntity.getEmail(),
+                                        itemRequestEntity.getKeyword(),
+                                        categories,
+                                        itemRequestEntity.getCreateDate(),
+                                        status);
 
                 return itemRequest;
             }
@@ -111,7 +132,4 @@ public class RequestsService {
         };
     }
 
-    public void invalidateRequests(Set<ItemRequest> processedRequests) {
-
-    }
 }

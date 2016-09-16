@@ -3,7 +3,6 @@ package com.gft.ft.controllers;
 import com.gft.ft.allegro.AllegroService;
 import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
-import com.gft.ft.commons.PresentationUtils;
 import com.gft.ft.commons.TooMuchItemsFoundException;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.requests.RequestsService;
@@ -41,17 +40,6 @@ public class AllegroItemsController {
     public static final String WEB_ITEMS_LABEL_ITEM_MSG = "web.items.label.item";
 
     private static Logger log = LoggerFactory.getLogger(AllegroItemsController.class);
-
-    /*
-    Klucz Allegro WebAPI: 	5a71c4b2
-    Użytkownik: slawek_test
-    Hasło: KontoTestowe1,
-    */
-    /*
-    Klucz Sandbox WebAPI: 	sc5f646c
-    Użytkownik: 	slawek_test
-    Hasło:  c5f646c5380559b2
-    */
 
     @Autowired
     private RequestsService requestsService;
@@ -99,7 +87,7 @@ public class AllegroItemsController {
         String response = getMessage(WEB_ITEMS_NO_REQUESTS_MSG);
         final Collection<ItemRequest> requests = requestsService.getRequests(email);
         if(CollectionUtils.isNotEmpty(requests)) {
-            response = paragraph(list(itemReqests(requests)));
+            response = paragraph(list(itemReqestsList(requests)));
         }
 
         return response;
@@ -109,7 +97,7 @@ public class AllegroItemsController {
         return messageSource.getMessage(msg, null, Locale.US);
     }
 
-    private String itemReqests(Collection<ItemRequest> requests) {
+    private String itemReqestsList(Collection<ItemRequest> requests) {
         StringBuffer listItems = new StringBuffer();
         for(ItemRequest ir : requests) {
             Collection<String> categories = allegroService.getCategoriesNames(new HashSet<>(ir.getCategories()));

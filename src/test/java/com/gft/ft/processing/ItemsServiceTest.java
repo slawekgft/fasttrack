@@ -103,5 +103,7 @@ public class ItemsServiceTest {
         verify(messagesService).mailItemAvailable(VALID_EMAIL, userAllSets);
         verify(messagesService).mailItemAvailable(VALID_OTHER_EMAIL, otherUserSet);
         verify(requestsService, times(2)).invalidateRequests(anySet());
+        verify(requestsService).invalidateOldRequests();
+        verify(requestsService).validateNewRequests();
     }
 }

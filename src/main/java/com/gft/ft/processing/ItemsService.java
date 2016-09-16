@@ -41,7 +41,9 @@ public class ItemsService {
         final Collection<ItemRequest> allValidRequests = requestsService.getAllValidRequests();
 
         final Map<String, List<ItemRequest>> reqestsByEmail = allValidRequests.stream().collect(Collectors.groupingBy(ItemRequest::getEmail));
-        reqestsByEmail.values().stream().filter(notEmpty()).forEach(checkUserRequests());
+        reqestsByEmail.values().stream().filter(notEmpty()).forEach(checkAndProcessUserRequests());
+        requestsService.invalidateOldRequests();
+        requestsService.validateNewRequests();
     }
 
     private Predicate<List<ItemRequest>> notEmpty() {
@@ -53,7 +55,7 @@ public class ItemsService {
         };
     }
 
-    private Consumer<? super List<ItemRequest>> checkUserRequests() {
+    private Consumer<? super List<ItemRequest>> checkAndProcessUserRequests() {
         Set<ItemRequest> processedRequests = new HashSet<>();
         return new Consumer<List<ItemRequest>>() {
             @Override

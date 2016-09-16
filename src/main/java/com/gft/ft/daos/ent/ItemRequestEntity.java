@@ -1,7 +1,11 @@
 package com.gft.ft.daos.ent;
 
+import org.hibernate.annotations.Type;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -23,7 +27,8 @@ public class ItemRequestEntity implements Serializable {
     @Column(nullable = false)
     private int status;
     @Column(nullable = false)
-    private Date createDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime createDate;
 
     protected ItemRequestEntity() {
 
@@ -34,7 +39,7 @@ public class ItemRequestEntity implements Serializable {
         this.keyword = keyword;
         this.categories = categories;
         this.status = 0;
-        this.createDate = new Date();
+        this.createDate = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -92,11 +97,11 @@ public class ItemRequestEntity implements Serializable {
         return id != null ? id.hashCode() : 0;
     }
 
-    public Date getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 }

@@ -1,0 +1,11 @@
+    /*
+    Klucz Allegro WebAPI: 	5a71c4b2
+    Użytkownik: slawek_test
+    Hasło: KontoTestowe1,
+    */
+    /*
+    Klucz Sandbox WebAPI: 	sc5f646c
+    Użytkownik: 	slawek_test
+    Hasło:  c5f646c5380559b2
+    */
+

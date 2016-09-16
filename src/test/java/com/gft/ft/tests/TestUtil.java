@@ -4,6 +4,7 @@ import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.daos.ent.ItemRequestEntity;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -46,7 +47,6 @@ public class TestUtil {
             return item;
         }
     }
-
 
     public static final ItemRequestBuilder createItemRequest() {
         return new ItemRequestBuilder();
@@ -118,7 +118,7 @@ public class TestUtil {
             return this;
         }
 
-        public ItemRequestEntityBuilder setCreateDate(Date createDate) {
+        public ItemRequestEntityBuilder setCreateDate(LocalDateTime createDate) {
             itemRequestEntity.setCreateDate(createDate);
             return this;
         }

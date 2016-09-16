@@ -6,8 +6,11 @@ import com.gft.ft.daos.repos.ItemRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import static com.gft.ft.commons.ItemRequestStatus.IN_PROGRESS;
 import static com.gft.ft.commons.ItemRequestStatus.NEW;
@@ -43,5 +46,18 @@ public class RequestsDAO {
 
     public Collection<ItemRequestEntity> getValidItemsRequestsAllUsers() {
         return itemRequestRepository.findByStatusOrderByEmailAscCreateDateDesc(ItemRequestStatus.IN_PROGRESS.ordinal());
+    }
+
+    public int invalidateRequests(List<Long> itemsIds) {
+        return itemRequestRepository.invalidateRequests(itemsIds);
+    }
+
+    public int invalidateRequestsOlderThan(long days) {
+        LocalDateTime cutDate = LocalDateTime.now().minusDays(days);
+        return itemRequestRepository.invalidateOldRequests(cutDate);
+    }
+
+    public int validateNewRequests() {
+        return itemRequestRepository.validateNewRequests();
     }
 }
