@@ -79,6 +79,7 @@ public class AllegroService {
             public Item apply(ItemsListType itemsListType) {
                 Item item = new Item();
                 item.setId(itemsListType.getItemId());
+                item.setName(itemsListType.getItemTitle());
 
                 return item;
             }

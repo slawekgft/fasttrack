@@ -126,7 +126,7 @@ public class AllegroItemsControllerTest {
     @Test
     public void shouldRequestBookItemTooMuchItemsFound() throws Exception {
         //given
-        doThrow(new TooMuchItemsFoundException(set(4))).when(requestsService).registerRequest(any(ItemRequest.class));
+        doThrow(new TooMuchItemsFoundException(createItemsSet(4))).when(requestsService).registerRequest(any(ItemRequest.class));
 
         //when
         final String response = allegroItemsController.requestItem(CAT_BOOKS_COM, "popularny przedmiot", VALID_EMAIL);

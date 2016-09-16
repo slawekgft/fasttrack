@@ -3,6 +3,7 @@ package com.gft.ft.controllers;
 import com.gft.ft.allegro.AllegroService;
 import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
+import com.gft.ft.commons.PresentationUtils;
 import com.gft.ft.commons.TooMuchItemsFoundException;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.requests.RequestsService;
@@ -23,6 +24,9 @@ import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
+
+import static com.gft.ft.commons.PresentationUtils.*;
+import static com.gft.ft.commons.PresentationUtils.list;
 
 /**
  * Created by e-srwn on 2016-09-06.
@@ -105,14 +109,6 @@ public class AllegroItemsController {
         return messageSource.getMessage(msg, null, Locale.US);
     }
 
-    private String paragraph(String message) {
-        return StringUtils.replace("<p>{0}</p>", "{0}", message);
-    }
-
-    private String list(String listElements) {
-        return StringUtils.replace("<ol>{0}</ol>", "{0}", listElements);
-    }
-
     private String itemReqests(Collection<ItemRequest> requests) {
         StringBuffer listItems = new StringBuffer();
         for(ItemRequest ir : requests) {
@@ -123,7 +119,4 @@ public class AllegroItemsController {
         return listItems.toString();
     }
 
-    private void listElem(StringBuffer out, String listItem) {
-        out.append(StringUtils.replace("<li>{0}</li>", "{0}", listItem));
-    }
 }

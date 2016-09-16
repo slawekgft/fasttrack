@@ -37,6 +37,11 @@ public class TestUtil {
             return this;
         }
 
+        public ItemBuilder setName(String name) {
+            this.item.setName(name);
+            return this;
+        }
+
         public Item build() {
             return item;
         }
@@ -132,10 +137,11 @@ public class TestUtil {
         return info.indexOf(REQUEST_REGISTERED_MSG) > -1;
     }
 
-    public static Set<Item> set(int count) {
+    public static Set<Item> createItemsSet(int count) {
         Set<Item> set = new HashSet<>();
         for(int i=0; i<count; i++) {
-            set.add(createItem().setId((long) (i + 31) * set.hashCode()).build());
+            final long id = (long) (i + 31) * set.hashCode();
+            set.add(createItem().setId(id).setName("item " + id).build());
         }
         return set;
     }

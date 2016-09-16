@@ -64,10 +64,10 @@ public class ItemsServiceTest {
         requests.add(createItemRequest().setCategories(100).setKeyword("Java").setEmail(VALID_OTHER_EMAIL).build());
 
         given(requestsService.getAllValidRequests()).willReturn(requests);
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(0))).willReturn(set(EMPTY));
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(1))).willReturn(set(EMPTY));
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(2))).willReturn(set(EMPTY));
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(3))).willReturn(set(EMPTY));
+        given(allegroService.findItemsForCategoryAndKeyword(requests.get(0))).willReturn(createItemsSet(EMPTY));
+        given(allegroService.findItemsForCategoryAndKeyword(requests.get(1))).willReturn(createItemsSet(EMPTY));
+        given(allegroService.findItemsForCategoryAndKeyword(requests.get(2))).willReturn(createItemsSet(EMPTY));
+        given(allegroService.findItemsForCategoryAndKeyword(requests.get(3))).willReturn(createItemsSet(EMPTY));
 
         // when
         itemsService.periodicalCheck();
@@ -87,7 +87,7 @@ public class ItemsServiceTest {
         requests.add(createItemRequest().setCategories(100).setKeyword("Java").setEmail(VALID_OTHER_EMAIL).build());
 
         given(requestsService.getAllValidRequests()).willReturn(requests);
-        final Set<Item> userSet0 = set(EMPTY), userSet1 = set(2), userSet2 = set(1), userAllSets = set(EMPTY), otherUserSet = set(1);
+        final Set<Item> userSet0 = createItemsSet(EMPTY), userSet1 = createItemsSet(2), userSet2 = createItemsSet(1), userAllSets = createItemsSet(EMPTY), otherUserSet = createItemsSet(1);
         userAllSets.addAll(userSet0);
         userAllSets.addAll(userSet1);
         userAllSets.addAll(userSet2);

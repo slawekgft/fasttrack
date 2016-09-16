@@ -35,7 +35,6 @@ public class ItemsService {
     @Autowired
     private MessagesService messagesService;
 
-
     @Scheduled(cron = "10 */1 * * * MON-FRI")
     public void periodicalCheck() {
         log.debug("periodicalCheck");
@@ -81,15 +80,6 @@ public class ItemsService {
                 };
             }
 
-        };
-    }
-
-    private Consumer<? super Item> processItemRequest() {
-        return new Consumer<Item>() {
-            @Override
-            public void accept(Item item) {
-                log.debug("item process");
-            }
         };
     }
 }
