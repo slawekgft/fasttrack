@@ -82,10 +82,14 @@ public class MessagesService {
                 message.setTo(email);
                 message.setSubject(getMessage(WEB_ITEMS_MAIL_SUBJ_MSG));
                 message.setFrom(mailFrom);
-                message.setText(provideBody(model), true);
+                message.setText(html(provideBody(model)), true);
             }
         };
         this.mailSender.send(preparator);
+    }
+
+    private String html(String body) {
+        return "<html><body>" + body + "</body></html>";
     }
 
     private String provideBody(Set<MailModel> model) {

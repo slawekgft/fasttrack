@@ -9,7 +9,11 @@
     </appender>
 
     <logger name="org.hibernate">
-        <level value="debug"/>
+        <level value="info"/>
+    </logger>
+
+    <logger name="org.apache.cxf">
+        <level value="info"/>
     </logger>
 
     <logger name="org.springframework">

@@ -25,9 +25,4 @@ public class Startpoint {
         SpringApplication.run(Startpoint.class, args);
         log.info("goodbye!");
     }
-
-    @Bean
-    public TestRestTemplate restTemplate() {
-        return new TestRestTemplate();
-    }
 }

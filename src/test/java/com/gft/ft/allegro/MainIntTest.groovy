@@ -2,20 +2,16 @@ package com.gft.ft.allegro
 
 import com.gft.ft.Startpoint
 import com.icegreen.greenmail.util.GreenMail
-import org.apache.http.HttpResponse
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClientBuilder
-import org.fest.assertions.Assertions
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationContextLoader
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
+
+import static org.fest.assertions.Assertions.assertThat
 
 /**
  * Created by e-srwn on 2016-09-16.
@@ -25,11 +21,15 @@ import spock.lang.Specification
 @IntegrationTest
 class MainIntTest extends Specification {
 
-//    @Shared def httpClient
+    public static final String REGISTERED_MSG = "Request registered."
+    public static final String FIND_URL = "http://localhost:8080/find"
+    public static final String TOO_MANY_ITEMS_MSG = "Many items are available now"
+    public static final String REGISTERED_ITEMS_LIST_MSG = "Registered requests"
+    public static final String NO_REQUESTS_FOUND_MSG = "No requests found"
 
-    @Shared def mailServer
+    @Shared def GreenMail mailServer
 
-    @Autowired TestRestTemplate template
+    TestRestTemplate template = new TestRestTemplate()
 
     def setupSpec() {
         mailServer = new GreenMail()
@@ -41,13 +41,47 @@ class MainIntTest extends Specification {
     }
 
     def "Register new item"() {
-
         when:
-        def object = template.getForObject("http://localhost:8080/find?cat=komputery&name=abcdefgh&email=slawomir.wegrzyn@gft.com", String.class)
-        println(object)
+        def object = template.getForObject("http://localhost:8080/find?cat=komputery&name=abcdefgh&email=user@gft.com", String.class)
 
         then:
-        Assertions.assertThat(object.toString()).contains("ok")
+        assertThat(object.toString()).contains(REGISTERED_MSG)
     }
 
+    def "Multiple items registration" () {
+        setup:
+        def url = FIND_URL + "?cat=" + category + "&name=" + name + "&email=" + user
+
+        expect:
+        def String response = template.getForObject(url, String.class)
+        println(">>>> " + url)
+        println(">>>> " + response)
+        registered == response.contains(REGISTERED_MSG)
+        tooMany == response.contains(TOO_MANY_ITEMS_MSG)
+
+        where:
+        category            |   name            |   user            | registered | tooMany
+        "komputery"         | "atari"           | "user"            | false      | false
+        "książki"           | "Br"              | "user@dom.com"    | false      | false
+        "ks"                | "Brown"           | "user@dom.com"    | false      | false
+        "komiks"            | "t-34 t-55"       | "user@dom.com"    | true       | false
+        "komputery"         | "abcxyzust"       | "user@dom.com"    | true       | false
+        "komputery"         | "atari"           | "user@.com"       | false      | true
+        "komputery"         | "laptop"          | "user@dom.com"    | false      | true
+        "książki"           | "Brown"           | "user@dom.com"    | false      | true
+    }
+
+    def "Show registered" () {
+        given:
+        def userEmail = "user@gft.com"
+        template.getForObject("http://localhost:8080/find?cat=komputery&name=abcdefgh&email=" + userEmail, String.class)
+
+        when:
+        def responseFound = template.getForObject("http://localhost:8080/check?email=" + userEmail, String.class)
+        def responseNotFound = template.getForObject("http://localhost:8080/check?email=notfound@user.com", String.class)
+
+        then:
+        assertThat(responseFound).contains(REGISTERED_ITEMS_LIST_MSG)
+        assertThat(responseNotFound).contains(NO_REQUESTS_FOUND_MSG)
+    }
 }
