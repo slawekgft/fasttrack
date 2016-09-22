@@ -109,14 +109,14 @@ public class RequestsService {
                 Collection<Integer> categories =
                         Arrays.stream(itemRequestEntity.getCategories().split(","))
                                 .mapToInt(map2Int()).boxed().collect(toList());
-                final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
+                final Optional<ItemRequestStatus> status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
                 ItemRequest itemRequest =
                         new ItemRequest(itemRequestEntity.getId(),
                                         itemRequestEntity.getEmail(),
                                         itemRequestEntity.getKeyword(),
                                         categories,
                                         itemRequestEntity.getCreateDate(),
-                                        status);
+                                        status.get());
 
                 return itemRequest;
             }
