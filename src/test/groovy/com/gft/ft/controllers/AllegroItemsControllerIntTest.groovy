@@ -1,6 +1,5 @@
 package com.gft.ft.controllers
 
-import com.gft.ft.tests.TestUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource

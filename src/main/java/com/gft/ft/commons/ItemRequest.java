@@ -3,7 +3,6 @@ package com.gft.ft.commons;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * Created by e-srwn on 2016-09-07.

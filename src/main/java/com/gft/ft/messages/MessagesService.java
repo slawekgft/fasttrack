@@ -1,17 +1,14 @@
 package com.gft.ft.messages;
 
 import com.gft.ft.allegro.AllegroService;
-import com.gft.ft.commons.PresentationUtils;
 import com.gft.ft.commons.allegro.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Locale;

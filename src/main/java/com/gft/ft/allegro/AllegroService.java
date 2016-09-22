@@ -5,7 +5,7 @@ import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -26,16 +26,14 @@ public class AllegroService {
     public static final String CATEGORY_FILTER_NAME = "category";
     public static final String SEARCH_FILTER_NAME = "search";
 
-    private @Value("${allegro.ws.webapi_key}") String apiKey;
-    private @Value("${allegro.ws.country_id}") Integer countryId;
-
     private ServiceService allegroWS;
+
+    @Autowired
     private ObjectFactory objectFactory;
 
     @PostConstruct
     public void init() {
         allegroWS = new ServiceService();
-        objectFactory = new AllegroObjectFactory(apiKey, countryId);
     }
 
     public Collection<Integer> findCategoriesIds(String categoryNameFilter) {

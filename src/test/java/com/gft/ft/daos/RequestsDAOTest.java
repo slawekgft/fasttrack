@@ -1,8 +1,6 @@
 package com.gft.ft.daos;
 
-import com.gft.ft.commons.ItemRequestStatus;
-import com.gft.ft.daos.ent.ItemRequestEntity;
-import org.fest.assertions.Assertions;
+import com.gft.ft.daos.entities.ItemRequestEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
-import static com.gft.ft.commons.ItemRequestStatus.ERROR;
-import static com.gft.ft.commons.ItemRequestStatus.FINISHED;
-import static com.gft.ft.commons.ItemRequestStatus.IN_PROGRESS;
-import static com.gft.ft.tests.TestUtil.CAT_BOOKS;
-import static com.gft.ft.tests.TestUtil.VALID_EMAIL;
-import static com.gft.ft.tests.TestUtil.createItemRequestEntity;
+import static com.gft.ft.commons.ItemRequestStatus.*;
+import static com.gft.ft.tests.TestUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

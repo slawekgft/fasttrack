@@ -1,12 +1,10 @@
-package com.gft.ft.daos.ent;
+package com.gft.ft.daos.entities;
 
-import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Created by e-srwn on 2016-09-09.

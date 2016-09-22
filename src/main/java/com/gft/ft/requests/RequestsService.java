@@ -1,11 +1,13 @@
 package com.gft.ft.requests;
 
 import com.gft.ft.allegro.AllegroService;
-import com.gft.ft.allegrointerface.ItemsListType;
-import com.gft.ft.commons.*;
+import com.gft.ft.commons.DBOperationProblemException;
+import com.gft.ft.commons.ItemRequest;
+import com.gft.ft.commons.ItemRequestStatus;
+import com.gft.ft.commons.TooMuchItemsFoundException;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.daos.RequestsDAO;
-import com.gft.ft.daos.ent.ItemRequestEntity;
+import com.gft.ft.daos.entities.ItemRequestEntity;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

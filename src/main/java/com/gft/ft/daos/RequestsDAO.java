@@ -1,7 +1,7 @@
 package com.gft.ft.daos;
 
 import com.gft.ft.commons.ItemRequestStatus;
-import com.gft.ft.daos.ent.ItemRequestEntity;
+import com.gft.ft.daos.entities.ItemRequestEntity;
 import com.gft.ft.daos.repos.ItemRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static com.gft.ft.commons.ItemRequestStatus.IN_PROGRESS;
 import static com.gft.ft.commons.ItemRequestStatus.NEW;

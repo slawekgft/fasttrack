@@ -2,10 +2,13 @@ package com.gft.ft.tests;
 
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
-import com.gft.ft.daos.ent.ItemRequestEntity;
+import com.gft.ft.daos.entities.ItemRequestEntity;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by e-srwn on 2016-09-09.

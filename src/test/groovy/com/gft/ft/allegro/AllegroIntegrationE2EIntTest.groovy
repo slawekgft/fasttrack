@@ -1,13 +1,13 @@
 package com.gft.ft.allegro
 
-import com.gft.ft.Startpoint
+import com.gft.ft.AllegroItemsApplication
 import com.icegreen.greenmail.util.GreenMail
 import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.web.WebAppConfiguration
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -16,10 +16,17 @@ import static org.fest.assertions.Assertions.assertThat
 /**
  * Created by e-srwn on 2016-09-16.
  */
-@ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = [Startpoint.class])
+/**
+ * Ten test może działać wyłącznie z produkcyjnym Allegro
+ * ze względu na sprawdzenie produkcyjnych nazw kategorii i towarów
+ *
+ * mvn -P prd -Dtest=AllegroIntegrationE2EIntTest test
+ */
+@ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = [AllegroItemsApplication.class])
 @WebAppConfiguration
 @IntegrationTest
-class MainIntTest extends Specification {
+@TestPropertySource(["/application.properties", "/application-prd.properties"])
+class AllegroIntegrationE2EIntTest extends Specification {
 
     public static final String REGISTERED_MSG = "Request registered."
     public static final String FIND_URL = "http://localhost:8080/find"

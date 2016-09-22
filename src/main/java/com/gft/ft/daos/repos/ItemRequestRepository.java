@@ -1,6 +1,6 @@
 package com.gft.ft.daos.repos;
 
-import com.gft.ft.daos.ent.ItemRequestEntity;
+import com.gft.ft.daos.entities.ItemRequestEntity;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -8,7 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by e-srwn on 2016-09-09.

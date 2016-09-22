@@ -8,8 +8,6 @@ import org.springframework.test.context.TestPropertySource
 import spock.lang.Shared
 import spock.lang.Specification
 
-import javax.mail.internet.MimeMessage
-
 import static com.gft.ft.tests.TestUtil.createItemsSet
 
 /**

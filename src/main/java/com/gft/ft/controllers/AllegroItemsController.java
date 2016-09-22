@@ -19,15 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
 import static com.gft.ft.commons.PresentationUtils.*;
-import static com.gft.ft.commons.PresentationUtils.list;
 import static org.apache.commons.lang3.StringUtils.length;
 
 /**

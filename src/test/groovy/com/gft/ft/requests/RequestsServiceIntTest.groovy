@@ -4,9 +4,7 @@ import com.gft.ft.commons.ItemRequest
 import com.gft.ft.commons.ItemRequestStatus
 import com.gft.ft.daos.RequestsDAO
 import com.gft.ft.daos.RequestsDAOTest
-import com.gft.ft.daos.ent.ItemRequestEntity
-import com.icegreen.greenmail.util.GreenMail
-import com.icegreen.greenmail.util.ServerSetupTest
+import com.gft.ft.daos.entities.ItemRequestEntity
 import org.junit.Ignore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
@@ -15,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
-import javax.persistence.Query
 
-import static com.gft.ft.commons.ItemRequestStatus.FINISHED
-import static com.gft.ft.tests.TestUtil.CAT_BOOKS
 import static com.gft.ft.tests.TestUtil.VALID_EMAIL
 import static com.gft.ft.tests.TestUtil.createItemRequestEntity
 

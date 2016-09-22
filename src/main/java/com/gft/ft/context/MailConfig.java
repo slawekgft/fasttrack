@@ -1,4 +1,4 @@
-package com.gft.ft.messages;
+package com.gft.ft.context;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
