@@ -12,6 +12,7 @@ import spock.lang.Specification
 @TestPropertySource(["/application.properties", "/application-dev.properties"])
 class AllegroItemsControllerIntTest extends Specification {
 
+    public static final String MANY_ITEMS_AVAILABLE_MSG = "Many items are available now"
     @Autowired
     AllegroItemsController allegroItemsController;
 
@@ -29,11 +30,11 @@ class AllegroItemsControllerIntTest extends Specification {
 
     def "Request item of too much items"() {
         expect:
-        allegroItemsController.requestItem(category,keyword,email).indexOf("Many items are available now") > -1 == tooManyItemsFound
+        allegroItemsController.requestItem(category,keyword,email).indexOf(MANY_ITEMS_AVAILABLE_MSG > -1 == tooManyItemsFound
 
         where:
         category        | keyword   |   email                   || tooManyItemsFound
-        "Komputery"     | "TEST"    |   "user1@dom.com"         || true
+        "Komputery"     | "TEST"    |   "user1@dom.com"         || false
         "Film"          | "Mozart"  |   "user1@other.dom.com"   || false
     }
 

@@ -8,6 +8,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.web.WebAppConfiguration
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -26,6 +27,7 @@ import static org.fest.assertions.Assertions.assertThat
 @WebAppConfiguration
 @IntegrationTest
 @TestPropertySource(["/application.properties", "/application-prd.properties"])
+@Ignore
 class AllegroIntegrationE2EIntTest extends Specification {
 
     public static final String REGISTERED_MSG = "Request registered."

@@ -4,7 +4,7 @@ import com.gft.ft.commons.ItemRequestStatus;
 import com.gft.ft.daos.entities.ItemRequestEntity;
 import com.gft.ft.daos.repos.ItemRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import static com.gft.ft.commons.ItemRequestStatus.NEW;
 /**
  * Created by e-srwn on 2016-09-07.
  */
-@Component
+@Repository
 public class RequestsDAO {
 
     @Autowired

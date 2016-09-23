@@ -8,7 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Locale;
@@ -21,7 +21,7 @@ import static com.gft.ft.commons.PresentationUtils.*;
 /**
  * Created by e-srwn on 2016-09-07.
  */
-@Component
+@Service
 public class MessagesService {
 
     public static final String WEB_ITEMS_MAIL_TEXT_MSG = "web.items.mail.text";

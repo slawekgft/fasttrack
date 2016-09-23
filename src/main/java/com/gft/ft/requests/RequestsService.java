@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by e-srwn on 2016-09-07.
  */
-@Component
+@Service
 public class RequestsService {
 
     private static final Logger log = LoggerFactory.getLogger(RequestsService.class);

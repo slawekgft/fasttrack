@@ -6,7 +6,7 @@ import com.gft.ft.commons.allegro.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -19,7 +19,7 @@ import static org.apache.commons.lang3.StringUtils.upperCase;
 /**
  * Created by e-srwn on 2016-09-07.
  */
-@Component
+@Service
 public class AllegroService {
 
     private static final Logger log = LoggerFactory.getLogger(AllegroService.class);
