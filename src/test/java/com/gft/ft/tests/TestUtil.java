@@ -4,6 +4,7 @@ import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.daos.entities.ItemRequestEntity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -121,12 +122,12 @@ public class TestUtil {
             return this;
         }
 
-        public ItemRequestEntityBuilder setCreateDate(LocalDateTime createDate) {
+        public ItemRequestEntityBuilder setCreateDate(Instant createDate) {
             itemRequestEntity.setCreateDate(createDate);
             return this;
         }
 
-        public ItemRequestEntityBuilder setStatus(int status) {
+        public ItemRequestEntityBuilder setStatus(String status) {
             itemRequestEntity.setStatus(status);
             return this;
         }

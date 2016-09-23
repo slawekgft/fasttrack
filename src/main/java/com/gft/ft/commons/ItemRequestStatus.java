@@ -9,8 +9,4 @@ import java.util.stream.Collectors;
  */
 public enum ItemRequestStatus {
     NEW, IN_PROGRESS, ERROR, FINISHED;
-
-    public static final Optional<ItemRequestStatus> valueOf(final int ordinal) {
-        return Arrays.stream(values()).filter((p) -> p.ordinal()==ordinal).collect(Collectors.reducing((a, b) -> null));
-    }
 }

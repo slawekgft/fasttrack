@@ -4,6 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 /**
@@ -23,10 +24,11 @@ public class ItemRequestEntity implements Serializable {
     @Column(nullable = false)
     private String categories;
     @Column(nullable = false)
-    private int status;
+    private String status;
     @Column(nullable = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime createDate;
+    @Convert(converter = InstantPersistenceConverter.class)
+    private Instant createDate;
 
     protected ItemRequestEntity() {
 
@@ -36,8 +38,8 @@ public class ItemRequestEntity implements Serializable {
         this.email = email;
         this.keyword = keyword;
         this.categories = categories;
-        this.status = 0;
-        this.createDate = LocalDateTime.now();
+        this.status = "NEW";
+        this.createDate = Instant.now();
     }
 
     public Long getId() {
@@ -72,11 +74,11 @@ public class ItemRequestEntity implements Serializable {
         this.categories = categories;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -95,11 +97,11 @@ public class ItemRequestEntity implements Serializable {
         return id != null ? id.hashCode() : 0;
     }
 
-    public LocalDateTime getCreateDate() {
+    public Instant getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(Instant createDate) {
         this.createDate = createDate;
     }
 }

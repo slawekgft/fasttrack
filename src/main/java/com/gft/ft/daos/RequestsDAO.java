@@ -6,7 +6,10 @@ import com.gft.ft.daos.repos.ItemRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,22 +32,18 @@ public class RequestsDAO {
 
     public Collection<ItemRequestEntity> getValidItemsRequestsForUser(String email) {
         Collection<ItemRequestEntity> items = new ArrayList<>();
-        items.addAll(itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, NEW.ordinal()));
-        items.addAll(itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, IN_PROGRESS.ordinal()));
+        items.addAll(itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, NEW.name()));
+        items.addAll(itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, IN_PROGRESS.name()));
 
         return items;
     }
 
     public Collection<ItemRequestEntity> getClosedItemsRequestsForUser(String email) {
-        return itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, ItemRequestStatus.FINISHED.ordinal());
-    }
-
-    public Collection<ItemRequestEntity> getFailedItemsRequestsForUser(String email) {
-        return itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, ItemRequestStatus.ERROR.ordinal());
+        return itemRequestRepository.findByEmailAndStatusOrderByCreateDateDesc(email, ItemRequestStatus.FINISHED.name());
     }
 
     public Collection<ItemRequestEntity> getValidItemsRequestsAllUsers() {
-        return itemRequestRepository.findByStatusOrderByEmailAscCreateDateDesc(ItemRequestStatus.IN_PROGRESS.ordinal());
+        return itemRequestRepository.findByStatusOrderByEmailAscCreateDateDesc(ItemRequestStatus.IN_PROGRESS.name());
     }
 
     public int invalidateRequests(List<Long> itemsIds) {
@@ -52,7 +51,7 @@ public class RequestsDAO {
     }
 
     public int invalidateRequestsOlderThan(long days) {
-        LocalDateTime cutDate = LocalDateTime.now().minusDays(days);
+        Instant cutDate = Instant.now().minus(days, ChronoUnit.DAYS);
         return itemRequestRepository.invalidateOldRequests(cutDate);
     }
 

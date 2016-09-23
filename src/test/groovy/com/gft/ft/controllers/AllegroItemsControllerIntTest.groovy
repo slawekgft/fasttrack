@@ -30,7 +30,7 @@ class AllegroItemsControllerIntTest extends Specification {
 
     def "Request item of too much items"() {
         expect:
-        allegroItemsController.requestItem(category,keyword,email).indexOf(MANY_ITEMS_AVAILABLE_MSG > -1 == tooManyItemsFound
+        allegroItemsController.requestItem(category,keyword,email).indexOf(MANY_ITEMS_AVAILABLE_MSG) > -1 == tooManyItemsFound
 
         where:
         category        | keyword   |   email                   || tooManyItemsFound

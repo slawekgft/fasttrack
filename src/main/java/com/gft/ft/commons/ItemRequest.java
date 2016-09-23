@@ -1,6 +1,6 @@
 package com.gft.ft.commons;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -13,7 +13,7 @@ public class ItemRequest {
     private String keyword;
     private Collection<Integer> categories = new ArrayList<>();
     private ItemRequestStatus status = ItemRequestStatus.NEW;
-    private LocalDateTime createDate = LocalDateTime.now();
+    private Instant createDate = Instant.now();
 
     public ItemRequest(String email, String keyword, Collection<Integer> categories) {
         this.email = email;
@@ -21,7 +21,7 @@ public class ItemRequest {
         this.categories = categories;
     }
 
-    public ItemRequest(Long id, String email, String keyword, Collection<Integer> categories, LocalDateTime createDate, ItemRequestStatus status) {
+    public ItemRequest(Long id, String email, String keyword, Collection<Integer> categories, Instant createDate, ItemRequestStatus status) {
         this(email, keyword, categories);
         this.id = id;
         this.status = status;
@@ -48,7 +48,7 @@ public class ItemRequest {
         return status;
     }
 
-    public LocalDateTime getCreateDate() {
+    public Instant getCreateDate() {
         return createDate;
     }
 

@@ -38,7 +38,7 @@ public class RequestsDAOTest {
                 createItemRequestEntity()
                         .setEmail(VALID_EMAIL)
                         .setKeyword(KW1)
-                        .setStatus(IN_PROGRESS.ordinal())
+                        .setStatus(IN_PROGRESS.name())
                         .setCategories(CAT_BOOKS).build();
 
         // when
@@ -58,13 +58,13 @@ public class RequestsDAOTest {
                 createItemRequestEntity()
                         .setEmail(VALID_EMAIL)
                         .setKeyword(KW1)
-                        .setStatus(FINISHED.ordinal())
+                        .setStatus(FINISHED.name())
                         .setCategories(CAT_BOOKS).build();
         ItemRequestEntity itemRequest2 =
                 createItemRequestEntity()
                         .setEmail(VALID_EMAIL)
                         .setKeyword(KW2)
-                        .setStatus(ERROR.ordinal())
+                        .setStatus(ERROR.name())
                         .setCategories(CAT_BOOKS).build();
         requestsDAO.save(itemRequest1);
         requestsDAO.save(itemRequest2);
@@ -83,19 +83,19 @@ public class RequestsDAOTest {
                 createItemRequestEntity()
                         .setEmail(VALID_EMAIL)
                         .setKeyword(KW1)
-                        .setStatus(FINISHED.ordinal())
+                        .setStatus(FINISHED.name())
                         .setCategories(CAT_BOOKS).build();
         ItemRequestEntity itemRequest2 =
                 createItemRequestEntity()
                         .setEmail(VALID_EMAIL)
                         .setKeyword(KW2)
-                        .setStatus(ERROR.ordinal())
+                        .setStatus(ERROR.name())
                         .setCategories(CAT_BOOKS).build();
         ItemRequestEntity itemRequest3 =
                 createItemRequestEntity()
                         .setEmail(VALID_EMAIL)
                         .setKeyword(KW3)
-                        .setStatus(IN_PROGRESS.ordinal())
+                        .setStatus(IN_PROGRESS.name())
                         .setCategories(CAT_BOOKS).build();
         requestsDAO.save(itemRequest1);
         requestsDAO.save(itemRequest2);

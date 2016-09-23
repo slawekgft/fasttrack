@@ -58,7 +58,7 @@ class RequestsServiceIntTest extends Specification {
         inProgressRequest()
         newProgressRequest()
 
-        def query = entityManager.createNativeQuery("UPDATE ITEM_REQUESTS SET create_Date = '2016-08-01' where status = 1")
+        def query = entityManager.createNativeQuery("UPDATE ITEM_REQUESTS SET create_Date = '2016-08-01 01:30:00.000-01:00' where status = 'IN_PROGRESS'")
         def updatedCount = query.executeUpdate()
 
         when:
@@ -101,7 +101,7 @@ class RequestsServiceIntTest extends Specification {
                 createItemRequestEntity()
                         .setEmail(VALID_EMAIL)
                         .setKeyword(RequestsDAOTest.KW1)
-                        .setStatus(status.ordinal())
+                        .setStatus(status.name())
                         .setCategories("1,2").build();
         return requestsDAO.save(itemRequest)
     }

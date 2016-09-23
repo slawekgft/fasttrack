@@ -99,7 +99,7 @@ public class RequestsService {
     private ItemRequestEntity mapRequest2Entity(ItemRequest itemRequest) {
         String categories = StringUtils.join(itemRequest.getCategories(), ",");
         ItemRequestEntity itemRequestEntity = new ItemRequestEntity(itemRequest.getEmail(), itemRequest.getKeyword(), categories);
-        itemRequestEntity.setStatus(itemRequest.getStatus().ordinal());
+        itemRequestEntity.setStatus(itemRequest.getStatus().name());
 
         return itemRequestEntity;
     }
@@ -111,14 +111,14 @@ public class RequestsService {
                 Collection<Integer> categories =
                         Arrays.stream(itemRequestEntity.getCategories().split(","))
                                 .mapToInt(map2Int()).boxed().collect(toList());
-                final Optional<ItemRequestStatus> status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
+                final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
                 ItemRequest itemRequest =
                         new ItemRequest(itemRequestEntity.getId(),
                                         itemRequestEntity.getEmail(),
                                         itemRequestEntity.getKeyword(),
                                         categories,
                                         itemRequestEntity.getCreateDate(),
-                                        status.get());
+                                        status);
 
                 return itemRequest;
             }
