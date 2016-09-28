@@ -47,12 +47,7 @@ public class ItemsService {
     }
 
     private Predicate<List<ItemRequest>> notEmpty() {
-        return new Predicate<List<ItemRequest>>() {
-            @Override
-            public boolean test(List<ItemRequest> itemRequests) {
-                return isNotEmpty(itemRequests);
-            }
-        };
+        return itemRequests -> isNotEmpty(itemRequests);
     }
 
     private Consumer<? super List<ItemRequest>> checkAndProcessUserRequests() {
@@ -70,15 +65,12 @@ public class ItemsService {
             }
 
             private Consumer<ItemRequest> findAvailableItems(final Set<Item> userItems) {
-                return new Consumer<ItemRequest>() {
-                    @Override
-                    public void accept(ItemRequest itemRequest) {
-                        final Set<Item> itemsForCategoryAndKeyword = allegroService.findItemsForCategoryAndKeyword(itemRequest);
-                        if (isNotEmpty(itemsForCategoryAndKeyword)) {
-                            processedRequests.add(itemRequest);
-                        }
-                        userItems.addAll(itemsForCategoryAndKeyword);
+                return itemRequest -> {
+                    final Set<Item> itemsForCategoryAndKeyword = allegroService.findItemsForCategoryAndKeyword(itemRequest);
+                    if (isNotEmpty(itemsForCategoryAndKeyword)) {
+                        processedRequests.add(itemRequest);
                     }
+                    userItems.addAll(itemsForCategoryAndKeyword);
                 };
             }
 

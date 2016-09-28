@@ -72,15 +72,12 @@ public class AllegroService {
     }
 
     private Function<? super ItemsListType, ? extends Item> map2Item() {
-        return new Function<ItemsListType, Item>() {
-            @Override
-            public Item apply(ItemsListType itemsListType) {
-                Item item = new Item();
-                item.setId(itemsListType.getItemId());
-                item.setName(itemsListType.getItemTitle());
+        return (Function<ItemsListType, Item>) itemsListType -> {
+            Item item = new Item();
+            item.setId(itemsListType.getItemId());
+            item.setName(itemsListType.getItemTitle());
 
-                return item;
-            }
+            return item;
         };
     }
 
@@ -89,21 +86,11 @@ public class AllegroService {
     }
 
     private Function<? super CatInfoType, ? extends Integer> categoryId() {
-        return new Function<CatInfoType, Integer>() {
-            @Override
-            public Integer apply(CatInfoType catInfoType) {
-                return catInfoType.getCatId();
-            }
-        };
+        return (Function<CatInfoType, Integer>) catInfoType -> catInfoType.getCatId();
     }
 
     private Predicate<? super CatInfoType> filterByName(final String categoryNameFilter) {
-        return new Predicate<CatInfoType>() {
-            @Override
-            public boolean test(final CatInfoType catInfoType) {
-                return upperCase(catInfoType.getCatName()).contains(upperCase(categoryNameFilter));
-            }
-        };
+        return (Predicate<CatInfoType>) catInfoType -> upperCase(catInfoType.getCatName()).contains(upperCase(categoryNameFilter));
     }
 
     private List<CatInfoType> getCatsInfo() {
@@ -114,21 +101,11 @@ public class AllegroService {
     }
 
     private Predicate<CatInfoType> filterByIds(final Set<Integer> categories) {
-        return new Predicate<CatInfoType>() {
-            @Override
-            public boolean test(CatInfoType catInfoType) {
-                return categories.contains(catInfoType.getCatId());
-            }
-        };
+        return catInfoType -> categories.contains(catInfoType.getCatId());
     }
 
     static Function<CatInfoType, String> categoryName() {
-        return new Function<CatInfoType, String>() {
-            @Override
-            public String apply(CatInfoType catInfoType) {
-                return catInfoType.getCatName();
-            }
-        };
+        return catInfoType -> catInfoType.getCatName();
     }
 
     private class FilterOptionsBuilder {

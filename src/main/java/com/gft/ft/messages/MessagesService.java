@@ -26,6 +26,7 @@ public class MessagesService {
 
     public static final String WEB_ITEMS_MAIL_TEXT_MSG = "web.items.mail.text";
     public static final String WEB_ITEMS_MAIL_SUBJ_MSG = "web.items.mail.subj";
+    public static final String AUCTION_URL_ALLEGRO = "http://allegro.pl";
 
     @Value("${email.from}")
     private String mailFrom;
@@ -62,25 +63,20 @@ public class MessagesService {
     }
 
     private Function<? super Item, ? extends MailModel> map2MailModel() {
-        return new Function<Item, MailModel>() {
-            @Override
-            public MailModel apply(Item item) {
-                String url = "http://allegro.pl";
-                MailModel mailModel = new MailModel(url, item.getName());
-                return mailModel;
-            }
+        return (Function<Item, MailModel>) item -> {
+            String url = AUCTION_URL_ALLEGRO;
+            MailModel mailModel = new MailModel(url, item.getName());
+            return mailModel;
         };
     }
 
     private void sendInformationEmail(final String email, final Set<MailModel> model) {
-        MimeMessagePreparator preparator = new MimeMessagePreparator() {
-            public void prepare(MimeMessage mimeMessage) throws Exception {
-                MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-                message.setTo(email);
-                message.setSubject(getMessage(WEB_ITEMS_MAIL_SUBJ_MSG));
-                message.setFrom(mailFrom);
-                message.setText(html(provideBody(model)), true);
-            }
+        MimeMessagePreparator preparator = mimeMessage -> {
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+            message.setTo(email);
+            message.setSubject(getMessage(WEB_ITEMS_MAIL_SUBJ_MSG));
+            message.setFrom(mailFrom);
+            message.setText(html(provideBody(model)), true);
         };
         this.mailSender.send(preparator);
     }

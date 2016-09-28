@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +40,6 @@ public class AllegroItemsController {
     public static final String WEB_ITEMS_LABEL_ITEM_MSG = "web.items.label.item";
     public static final String WEB_VALIDATION_LENGTH_MSG = "web.validation.msg.length";
     public static final String WEB_VALIDATION_EMAIL_MSG = "web.validation.msg.email";
-    public static final String WEB_ITEMS_NO_ITEMS_MSG = "web.items.no_items";
     public static final String WEB_ITEMS_REQUESTS_REGISTERED_MSG = "web.items.requests_registered";
 
     private static Logger log = LoggerFactory.getLogger(AllegroItemsController.class);
@@ -53,7 +53,7 @@ public class AllegroItemsController {
     @Autowired
     private AllegroService allegroService;
 
-    @RequestMapping(value = "/find", produces = MediaType.TEXT_HTML_VALUE)
+    @RequestMapping(value = "/find", method = RequestMethod.POST, produces = MediaType.TEXT_HTML_VALUE)
     public String requestItem(@RequestParam(value = "cat") String categoryNameFilter,
                               @RequestParam(value = "name") String keyword,
                               @RequestParam(value = "email") String email) {
@@ -76,9 +76,8 @@ public class AllegroItemsController {
         return paragraph(info);
     }
 
-
-    @RequestMapping(value = "/check", produces = MediaType.TEXT_HTML_VALUE)
-    public String checkRequests(@RequestParam(value = "email") String email) {
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+    public String listRequests(@RequestParam(value = "email") String email) {
         String response = paragraph(getMessage(WEB_ITEMS_NO_REQUESTS_MSG));
         final Collection<ItemRequest> requests = requestsService.getRequests(email);
         if(CollectionUtils.isNotEmpty(requests)) {

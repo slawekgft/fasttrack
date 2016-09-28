@@ -116,7 +116,7 @@ public class AllegroItemsControllerTest {
         given(allegroService.getCategoriesNames(anySet())).willReturn(Arrays.asList("kat1", "kat2"));
 
         //when
-        final String requestsListInfo = allegroItemsController.checkRequests(VALID_EMAIL);
+        final String requestsListInfo = allegroItemsController.listRequests(VALID_EMAIL);
 
         //then
         assertThat(numberOfLines(requestsListInfo)).isEqualTo(2);

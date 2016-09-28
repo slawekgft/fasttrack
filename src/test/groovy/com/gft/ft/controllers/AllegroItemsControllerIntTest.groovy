@@ -44,7 +44,7 @@ class AllegroItemsControllerIntTest extends Specification {
             allegroItemsController.requestItem("książki","Homer","user1@dom.com")
 
         expect:
-        noRequests == allegroItemsController.checkRequests(email).indexOf("No requests found.") > -1
+        noRequests == allegroItemsController.listRequests(email).indexOf("No requests found.") > -1
 
         where:
         email               || noRequests

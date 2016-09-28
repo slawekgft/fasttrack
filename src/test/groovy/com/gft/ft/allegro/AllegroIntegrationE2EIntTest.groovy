@@ -27,11 +27,11 @@ import static org.fest.assertions.Assertions.assertThat
 @WebAppConfiguration
 @IntegrationTest
 @TestPropertySource(["/application.properties", "/application-prd.properties"])
-@Ignore
 class AllegroIntegrationE2EIntTest extends Specification {
 
-    public static final String REGISTERED_MSG = "Request registered."
     public static final String FIND_URL = "http://localhost:8080/find"
+    public static final String LIST_URL = "http://localhost:8080/list"
+    public static final String REGISTERED_MSG = "Request registered."
     public static final String TOO_MANY_ITEMS_MSG = "Many items are available now"
     public static final String REGISTERED_ITEMS_LIST_MSG = "Registered requests"
     public static final String NO_REQUESTS_FOUND_MSG = "No requests found"
@@ -51,7 +51,10 @@ class AllegroIntegrationE2EIntTest extends Specification {
 
     def "Register new item"() {
         when:
-        def object = template.getForObject("http://localhost:8080/find?cat=komputery&name=abcdefgh&email=user@gft.com", String.class)
+        def object = template.postForObject(
+                FIND_URL + "?cat=komputery&name=abcdefgh&email=user@gft.com",
+                null,
+                String.class)
 
         then:
         assertThat(object.toString()).contains(REGISTERED_MSG)
@@ -62,7 +65,7 @@ class AllegroIntegrationE2EIntTest extends Specification {
         def url = FIND_URL + "?cat=" + category + "&name=" + name + "&email=" + user
 
         expect:
-        def String response = template.getForObject(url, String.class)
+        def String response = template.postForObject(url, null, String.class)
         println(">>>> " + url)
         println(">>>> " + response)
         registered == response.contains(REGISTERED_MSG)
@@ -83,11 +86,11 @@ class AllegroIntegrationE2EIntTest extends Specification {
     def "Show registered" () {
         given:
         def userEmail = "user@gft.com"
-        template.getForObject("http://localhost:8080/find?cat=komputery&name=abcdefgh&email=" + userEmail, String.class)
+        template.postForObject(FIND_URL + "?cat=komputery&name=abcdefgh&email=" + userEmail, null, String.class)
 
         when:
-        def responseFound = template.getForObject("http://localhost:8080/check?email=" + userEmail, String.class)
-        def responseNotFound = template.getForObject("http://localhost:8080/check?email=notfound@user.com", String.class)
+        def responseFound = template.getForObject(LIST_URL + "?email=" + userEmail, String.class)
+        def responseNotFound = template.getForObject(LIST_URL + "?email=notfound@user.com", String.class)
 
         then:
         assertThat(responseFound).contains(REGISTERED_ITEMS_LIST_MSG)
