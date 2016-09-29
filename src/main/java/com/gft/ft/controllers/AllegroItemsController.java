@@ -94,11 +94,12 @@ public class AllegroItemsController {
 
     private String itemReqestsList(Collection<ItemRequest> requests) {
         StringBuffer listItems = new StringBuffer();
-        for(ItemRequest ir : requests) {
+        requests.forEach(ir -> {
             Collection<String> categories = allegroService.getCategoriesNames(new HashSet<>(ir.getCategories()));
             final String replacement = "'" + ir.getKeyword() + "', {" + StringUtils.join(categories, "|") + "}, " + ir.getStatus();
             listElem(listItems, replacement);
-        }
+        });
+
         return listItems.toString();
     }
 
@@ -120,9 +121,9 @@ public class AllegroItemsController {
         final StringBuffer sb = new StringBuffer(message);
         if(CollectionUtils.size(items) > 0) {
             StringBuffer listOfItems = new StringBuffer();
-            for(Item it : items) {
+            items.forEach(it -> {
                 listElem(listOfItems, getMessage(WEB_ITEMS_LABEL_ITEM_MSG) + " " + it.getId());
-            }
+            });
             sb.append(list(listOfItems.toString()));
         }
         return sb.toString();

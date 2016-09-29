@@ -54,7 +54,7 @@ public class AllegroService {
         Set<Item> foundItems = new HashSet<>();
         final ServicePort servicePort = allegroWS.getServicePort();
         final DoGetItemsListRequest doGetItemsListRequest = objectFactory.createDoGetItemsListRequest();
-        for(Integer categoryId : itemRequest.getCategories()) {
+        itemRequest.getCategories().forEach(categoryId -> {
             final ArrayOfFilteroptionstype arrayOfFilteroptionstype = objectFactory.createArrayOfFilteroptionstype();
             arrayOfFilteroptionstype.getItem().addAll(filterItems()
                     .addSearch(CATEGORY_FILTER_NAME, Integer.toString(categoryId))
@@ -66,7 +66,7 @@ public class AllegroService {
             if (doGetItemsListResponse.getItemsCount() > 0) {
                 foundItems.addAll(doGetItemsListResponse.getItemsList().getItem().stream().map(map2Item()).collect(Collectors.toSet()));
             }
-        }
+        });
 
         return foundItems;
     }
@@ -119,9 +119,7 @@ public class AllegroService {
             FilterOptionsType filter = objectFactory.createFilterOptionsType();
             filter.setFilterId(id);
             ArrayOfString filterValues = objectFactory.createArrayOfString();
-            for (String v : value) {
-                filterValues.getItem().add(v);
-            }
+            filterValues.getItem().addAll(Arrays.asList(value));
             filter.setFilterValueId(filterValues);
             filters.add(filter);
 

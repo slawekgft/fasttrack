@@ -87,11 +87,11 @@ public class MessagesService {
 
     private String provideBody(Set<MailModel> model) {
         StringBuffer sb = new StringBuffer();
-        for (MailModel mm : model) {
+        model.forEach(mm -> {
             listElem(sb, getMessage(WEB_ITEMS_MAIL_TEXT_MSG)
                     .replaceFirst("\\{0\\}", mm.getUrl())
                     .replaceFirst("\\{1\\}", mm.getItemName()));
-        }
+        });
 
         return paragraph(list(sb.toString()));
     }
