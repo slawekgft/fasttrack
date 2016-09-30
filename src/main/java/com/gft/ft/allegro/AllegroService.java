@@ -26,15 +26,11 @@ public class AllegroService {
     public static final String CATEGORY_FILTER_NAME = "category";
     public static final String SEARCH_FILTER_NAME = "search";
 
+    @Autowired
     private ServiceService allegroWS;
 
     @Autowired
     private ObjectFactory objectFactory;
-
-    @PostConstruct
-    public void init() {
-        allegroWS = new ServiceService();
-    }
 
     public Collection<Integer> findCategoriesIds(String categoryNameFilter) {
         final List<CatInfoType> catInfoTypes = getCatsInfo();

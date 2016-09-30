@@ -1,6 +1,7 @@
 package com.gft.ft.context;
 
 import com.gft.ft.allegro.AllegroObjectFactory;
+import com.gft.ft.allegrointerface.ServiceService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,5 +18,10 @@ public class BeanConfig {
     @Bean
     public AllegroObjectFactory allegroObjectFactory() {
         return new AllegroObjectFactory(apiKey, countryId);
+    }
+
+    @Bean
+    public ServiceService serviceService() {
+        return new ServiceService();
     }
 }
