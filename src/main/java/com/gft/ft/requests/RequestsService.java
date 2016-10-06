@@ -69,12 +69,18 @@ public class RequestsService {
 
     public Collection<ItemRequest> getAllValidRequests() {
         log.debug("getAllValidRequests");
-        return requestsDAO.getValidItemsRequestsAllUsers().stream().map(mapEntity2ItemRequest()).collect(toList());
+        return requestsDAO.getValidItemsRequestsAllUsers()
+                .stream()
+                .map(mapEntity2ItemRequest())
+                .collect(toList());
     }
 
     @Transactional
     public void invalidateRequests(Set<ItemRequest> requests) {
-        requestsDAO.invalidateRequests(requests.stream().mapToLong(mapRequests2Ids()).boxed().collect(Collectors.toList()));
+        requestsDAO.invalidateRequests(requests.stream()
+                                        .mapToLong(mapRequests2Ids())
+                                        .boxed()
+                                        .collect(Collectors.toList()));
     }
 
     @Transactional
@@ -88,12 +94,7 @@ public class RequestsService {
     }
 
     private ToLongFunction<ItemRequest> mapRequests2Ids() {
-        return new ToLongFunction<ItemRequest>(){
-            @Override
-            public long applyAsLong(ItemRequest itemRequest) {
-                return itemRequest.getId();
-            }
-        };
+        return itemRequest -> itemRequest.getId();
     }
 
     private ItemRequestEntity mapRequest2Entity(ItemRequest itemRequest) {
@@ -105,33 +106,25 @@ public class RequestsService {
     }
 
     private Function<ItemRequestEntity, ItemRequest> mapEntity2ItemRequest() {
-        return new Function<ItemRequestEntity, ItemRequest>() {
-            @Override
-            public ItemRequest apply(ItemRequestEntity itemRequestEntity) {
-                Collection<Integer> categories =
-                        Arrays.stream(itemRequestEntity.getCategories().split(","))
-                                .mapToInt(map2Int()).boxed().collect(toList());
-                final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
-                ItemRequest itemRequest =
-                        new ItemRequest(itemRequestEntity.getId(),
-                                        itemRequestEntity.getEmail(),
-                                        itemRequestEntity.getKeyword(),
-                                        categories,
-                                        itemRequestEntity.getCreateDate(),
-                                        status);
+        return itemRequestEntity -> {
+            Collection<Integer> categories =
+                    Arrays.stream(itemRequestEntity.getCategories().split(","))
+                            .mapToInt(map2Int()).boxed().collect(toList());
+            final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
+            ItemRequest itemRequest =
+                    new ItemRequest(itemRequestEntity.getId(),
+                                    itemRequestEntity.getEmail(),
+                                    itemRequestEntity.getKeyword(),
+                                    categories,
+                                    itemRequestEntity.getCreateDate(),
+                                    status);
 
-                return itemRequest;
-            }
+            return itemRequest;
         };
     }
 
     private ToIntFunction<String> map2Int() {
-        return new ToIntFunction<String>() {
-            @Override
-            public int applyAsInt(String value) {
-                return Integer.parseInt(value);
-            }
-        };
+        return value -> Integer.parseInt(value);
     }
 
 }

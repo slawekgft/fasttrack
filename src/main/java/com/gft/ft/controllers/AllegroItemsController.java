@@ -1,10 +1,7 @@
 package com.gft.ft.controllers;
 
 import com.gft.ft.allegro.AllegroService;
-import com.gft.ft.commons.DBOperationProblemException;
-import com.gft.ft.commons.ItemRequest;
-import com.gft.ft.commons.RequestValidationException;
-import com.gft.ft.commons.TooMuchItemsFoundException;
+import com.gft.ft.commons.*;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.requests.RequestsService;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.function.Function;
 
 import static com.gft.ft.commons.PresentationUtils.*;
 import static org.apache.commons.lang3.StringUtils.length;
@@ -80,9 +78,9 @@ public class AllegroItemsController {
     public String listRequests(@RequestParam(value = "email") String email) {
         String response = paragraph(getMessage(WEB_ITEMS_NO_REQUESTS_MSG));
         final Collection<ItemRequest> requests = requestsService.getRequests(email);
-        if(CollectionUtils.isNotEmpty(requests)) {
+        if (CollectionUtils.isNotEmpty(requests)) {
             response = paragraph(getMessage(WEB_ITEMS_REQUESTS_REGISTERED_MSG))
-                     + paragraph(list(itemReqestsList(requests)));
+                    + paragraph(list(itemReqestsList(requests)));
         }
 
         return response;
@@ -94,38 +92,49 @@ public class AllegroItemsController {
 
     private String itemReqestsList(Collection<ItemRequest> requests) {
         StringBuffer listItems = new StringBuffer();
-        requests.forEach(ir -> {
-            Collection<String> categories = allegroService.getCategoriesNames(new HashSet<>(ir.getCategories()));
-            final String replacement = "'" + ir.getKeyword() + "', {" + StringUtils.join(categories, "|") + "}, " + ir.getStatus();
-            listElem(listItems, replacement);
-        });
-
+        requests.stream()
+                .map(commaSeparatedList())
+                .map(PresentationUtils::wrapInBulletTag)
+                .forEach(listItems::append);
         return listItems.toString();
+    }
+
+    private Function<ItemRequest, String> commaSeparatedList() {
+        return ir ->
+        {
+            final Collection<String> categories = allegroService.getCategoriesNames(new HashSet<>(ir.getCategories()));
+            return "'" + ir.getKeyword() + "', {" + StringUtils.join(categories, "|") + "}, " + ir.getStatus();
+        };
     }
 
     private void validate(String categoryNameFilter, String keyword, String email) throws RequestValidationException {
 
-        if(length(categoryNameFilter) < 3 || length(categoryNameFilter) > 50) {
+        if (length(categoryNameFilter) < 3 || length(categoryNameFilter) > 50) {
             throw new RequestValidationException("Kategoria", getMessage(WEB_VALIDATION_LENGTH_MSG));
         }
-        if(length(keyword) < 3 || length(categoryNameFilter) > 50) {
+        if (length(keyword) < 3 || length(categoryNameFilter) > 50) {
             throw new RequestValidationException("Nazwa", getMessage(WEB_VALIDATION_LENGTH_MSG));
         }
         final EmailValidator emailValidator = EmailValidator.getInstance();
-        if(!emailValidator.isValid(email)) {
+        if (!emailValidator.isValid(email)) {
             throw new RequestValidationException("E-mail", getMessage(WEB_VALIDATION_EMAIL_MSG));
         }
     }
 
     private String prepareListInfo(String message, Collection<Item> items) {
         final StringBuffer sb = new StringBuffer(message);
-        if(CollectionUtils.size(items) > 0) {
+        if (CollectionUtils.size(items) > 0) {
             StringBuffer listOfItems = new StringBuffer();
-            items.forEach(it -> {
-                listElem(listOfItems, getMessage(WEB_ITEMS_LABEL_ITEM_MSG) + " " + it.getId());
-            });
+            items.stream()
+                .map(mailListElements())
+                .map(PresentationUtils::wrapInBulletTag)
+                .forEach(listOfItems::append);
             sb.append(list(listOfItems.toString()));
         }
         return sb.toString();
+    }
+
+    private Function<? super Item, ? extends String> mailListElements() {
+        return item -> getMessage(WEB_ITEMS_LABEL_ITEM_MSG) + " " + item.getId();
     }
 }

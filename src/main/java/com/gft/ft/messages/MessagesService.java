@@ -1,6 +1,7 @@
 package com.gft.ft.messages;
 
 import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.commons.PresentationUtils;
 import com.gft.ft.commons.allegro.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,13 +88,18 @@ public class MessagesService {
 
     private String provideBody(Set<MailModel> model) {
         StringBuffer sb = new StringBuffer();
-        model.forEach(mm -> {
-            listElem(sb, getMessage(WEB_ITEMS_MAIL_TEXT_MSG)
-                    .replaceFirst("\\{0\\}", mm.getUrl())
-                    .replaceFirst("\\{1\\}", mm.getItemName()));
-        });
+        model.stream()
+             .map(mailListElements())
+             .map(PresentationUtils::wrapInBulletTag)
+             .forEach(sb::append);
 
         return paragraph(list(sb.toString()));
+    }
+
+    private Function<? super MailModel,? extends String> mailListElements() {
+        return mailModel -> getMessage(WEB_ITEMS_MAIL_TEXT_MSG)
+                .replaceFirst("\\{0\\}", mailModel.getUrl())
+                .replaceFirst("\\{1\\}", mailModel.getItemName());
     }
 
     private String getMessage(String msg) {

@@ -35,11 +35,16 @@ class MessagesServiceIntTest extends Specification {
     }
 
     def "MailItemAvailable"() {
-        expect:
+        setup:
         messagesService.mailItemAvailable(email, items)
         def receivedMessages = server.getReceivedMessages()
+        def body = (String)receivedMessages[0].getContent()
+
+        expect:
         receivedMessages.size() == msgCount
         receivedMessages[0].getHeader("Subject")[0].equals(subject)
+        body.contains("> for item") == true
+        body.contains("<li>This is Allegro") == true
 
         where:
         email                      | items              | msgCount      | subject
