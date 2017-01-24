@@ -103,7 +103,7 @@ public class RequestsService {
     private ItemRequest mapEntity2ItemRequest(ItemRequestEntity itemRequestEntity) {
         Collection<Integer> categories =
                 Arrays.stream(itemRequestEntity.getCategories().split(","))
-                        .mapToInt(map2Int()).boxed().collect(toList());
+                        .mapToInt(Integer::parseInt).boxed().collect(toList());
         final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
         ItemRequest itemRequest =
                 new ItemRequest(itemRequestEntity.getId(),
