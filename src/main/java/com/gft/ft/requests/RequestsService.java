@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -59,8 +58,10 @@ public class RequestsService {
     public Collection<ItemRequest> getRequests(String email) {
         log.debug("getRequests for " + email);
         Collection<ItemRequest> itemRequests = new ArrayList<>();
-        itemRequests.addAll(requestsDAO.getValidItemsRequestsForUser(email).stream().map(mapEntity2ItemRequest()).collect(toList()));
-        itemRequests.addAll(requestsDAO.getClosedItemsRequestsForUser(email).stream().map(mapEntity2ItemRequest()).collect(toList()));
+        itemRequests.addAll(requestsDAO.getValidItemsRequestsForUser(email)
+                .stream().map(itemRequestEntity -> mapEntity2ItemRequest(itemRequestEntity)).collect(toList()));
+        itemRequests.addAll(requestsDAO.getClosedItemsRequestsForUser(email)
+                .stream().map(itemRequestEntity -> mapEntity2ItemRequest(itemRequestEntity)).collect(toList()));
 
         return itemRequests;
     }
@@ -69,7 +70,7 @@ public class RequestsService {
         log.debug("getAllValidRequests");
         return requestsDAO.getValidItemsRequestsAllUsers()
                 .stream()
-                .map(mapEntity2ItemRequest())
+                .map(itemRequestEntity -> mapEntity2ItemRequest(itemRequestEntity))
                 .collect(toList());
     }
 
@@ -99,24 +100,20 @@ public class RequestsService {
         return itemRequestEntity;
     }
 
-    private Function<ItemRequestEntity, ItemRequest> mapEntity2ItemRequest() {
-        return itemRequestEntity -> {
-            Collection<Integer> categories =
-                    Arrays.stream(
-                            itemRequestEntity.getCategories().split(","))
-                            .mapToInt(Integer::parseInt).boxed().collect(toList());
+    private ItemRequest mapEntity2ItemRequest(ItemRequestEntity itemRequestEntity) {
+        Collection<Integer> categories =
+                Arrays.stream(itemRequestEntity.getCategories().split(","))
+                        .mapToInt(map2Int()).boxed().collect(toList());
+        final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
+        ItemRequest itemRequest =
+                new ItemRequest(itemRequestEntity.getId(),
+                        itemRequestEntity.getEmail(),
+                        itemRequestEntity.getKeyword(),
+                        categories,
+                        itemRequestEntity.getCreateDate(),
+                        status);
 
-            final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
-            ItemRequest itemRequest =
-                    new ItemRequest(itemRequestEntity.getId(),
-                            itemRequestEntity.getEmail(),
-                            itemRequestEntity.getKeyword(),
-                            categories,
-                            itemRequestEntity.getCreateDate(),
-                            status);
-
-            return itemRequest;
-        };
+        return itemRequest;
     }
 
 }
