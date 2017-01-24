@@ -12,10 +12,10 @@ import spock.lang.Specification
  */
 @ContextConfiguration(locations = "classpath:app-config-empty.xml")
 @TestPropertySource(["/application.properties", "/application-dev.properties"])
-class AllegroServiceIntTest extends Specification {
+class AllegroOperationsServiceIntTest extends Specification {
 
     @Autowired
-    AllegroService allegroService
+    AllegroOperationsService allegroService
 
     def "FindItemsForCategoryAndKeyword"() {
         setup:

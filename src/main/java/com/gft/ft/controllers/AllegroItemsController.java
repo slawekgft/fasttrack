@@ -1,12 +1,16 @@
 package com.gft.ft.controllers;
 
-import com.gft.ft.allegro.AllegroService;
-import com.gft.ft.commons.*;
+import com.gft.ft.allegro.AllegroOperationsService;
+import com.gft.ft.commons.DBOperationProblemException;
+import com.gft.ft.commons.ItemRequest;
+import com.gft.ft.commons.PresentationUtils;
+import com.gft.ft.commons.TooMuchItemsFoundException;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.requests.RequestsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +26,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.function.Function;
 
-import static com.gft.ft.commons.PresentationUtils.*;
-import static org.apache.commons.lang3.StringUtils.length;
+import static com.gft.ft.commons.PresentationUtils.list;
+import static com.gft.ft.commons.PresentationUtils.paragraph;
 
 /**
  * Created by e-srwn on 2016-09-06.
@@ -49,26 +53,23 @@ public class AllegroItemsController {
     private MessageSource messageSource;
 
     @Autowired
-    private AllegroService allegroService;
+    private AllegroOperationsService allegroOperationsService;
 
     @RequestMapping(value = "/find", method = RequestMethod.POST, produces = MediaType.TEXT_HTML_VALUE)
-    public String requestItem(@RequestParam(value = "cat") String categoryNameFilter,
-                              @RequestParam(value = "name") String keyword,
-                              @RequestParam(value = "email") String email) {
+    public String requestItem(@Length(min = 3, max = 50, message = "Proszę podać poprawną nazwę katalogu!") @RequestParam(value = "cat") String categoryNameFilter,
+                              @Length(min = 3, max = 50, message = "Proszę podać poprawną nazwę przedmiotu!") @RequestParam(value = "name") String keyword,
+                              @Email @RequestParam(value = "email") String email) {
 
         log.debug("requestItem for " + email);
         String info = getMessage(WEB_ITEMS_REQUEST_REGISTERED_MSG);
         try {
-            validate(categoryNameFilter, keyword, email);
-            final Collection<Integer> categoriesIds = allegroService.findCategoriesIds(categoryNameFilter);
+            final Collection<Integer> categoriesIds = allegroOperationsService.findCategoriesIds(categoryNameFilter);
             final ItemRequest itemRequest = new ItemRequest(email, keyword, categoriesIds);
             requestsService.registerRequest(itemRequest);
         } catch (DBOperationProblemException e) {
             info = getMessage(WEB_ITEMS_REQUEST_PROBLEM_MSG);
         } catch (TooMuchItemsFoundException e) {
             info = prepareListInfo(getMessage(WEB_ITEMS_TOO_MANY_ITEMS_MSG), e.getItems());
-        } catch (RequestValidationException e) {
-            info = e.getFieldName() + " : " + e.getMessage();
         }
 
         return paragraph(info);
@@ -102,23 +103,9 @@ public class AllegroItemsController {
     private Function<ItemRequest, String> commaSeparatedList() {
         return ir ->
         {
-            final Collection<String> categories = allegroService.getCategoriesNames(new HashSet<>(ir.getCategories()));
+            final Collection<String> categories = allegroOperationsService.getCategoriesNames(new HashSet<>(ir.getCategories()));
             return "'" + ir.getKeyword() + "', {" + StringUtils.join(categories, "|") + "}, " + ir.getStatus();
         };
-    }
-
-    private void validate(String categoryNameFilter, String keyword, String email) throws RequestValidationException {
-
-        if (length(categoryNameFilter) < 3 || length(categoryNameFilter) > 50) {
-            throw new RequestValidationException("Kategoria", getMessage(WEB_VALIDATION_LENGTH_MSG));
-        }
-        if (length(keyword) < 3 || length(categoryNameFilter) > 50) {
-            throw new RequestValidationException("Nazwa", getMessage(WEB_VALIDATION_LENGTH_MSG));
-        }
-        final EmailValidator emailValidator = EmailValidator.getInstance();
-        if (!emailValidator.isValid(email)) {
-            throw new RequestValidationException("E-mail", getMessage(WEB_VALIDATION_EMAIL_MSG));
-        }
     }
 
     private String prepareListInfo(String message, Collection<Item> items) {

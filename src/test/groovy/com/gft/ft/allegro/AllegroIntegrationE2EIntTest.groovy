@@ -27,7 +27,6 @@ import static org.fest.assertions.Assertions.assertThat
 @WebAppConfiguration
 @IntegrationTest
 @TestPropertySource(["/application.properties", "/application-prd.properties"])
-@Ignore
 class AllegroIntegrationE2EIntTest extends Specification {
 
     public static final String FIND_URL = "http://localhost:8080/find"

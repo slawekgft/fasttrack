@@ -1,0 +1,16 @@
+<bindings version="2.1"
+          xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+          xmlns="http://java.sun.com/xml/ns/jaxws"
+          wsdlLocation="https://webapi.allegro.pl.webapisandbox.pl/service.php?wsdl">
+
+    <bindings node="wsdl:definitions/wsdl:portType[@name='servicePort']">
+        <class name="Allegro">
+            <javadoc>Interfejs do testowej usługi Allegro (SandboxAPI).</javadoc>
+        </class>
+    </bindings>
+    <bindings node="wsdl:definitions/wsdl:service[@name='serviceService']">
+        <class name="AllegroWebService">
+            <javadoc>Service dostarczający implementację interfejsu SandboxAPI.</javadoc>
+        </class>
+    </bindings>
+</bindings>

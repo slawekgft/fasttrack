@@ -31,12 +31,16 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <allegro.wsdl.binding>binding-sandbox.xml</allegro.wsdl.binding>
                 <allegro.wsdl.url>https://webapi.allegro.pl.webapisandbox.pl/service.php?wsdl</allegro.wsdl.url>
+                <!--allegro.wsdl.binding>xxx</allegro.wsdl.binding>
+                <allegro.wsdl.url></allegro.wsdl.url-->
             </properties>
         </profile>
         <profile>
             <id>prd</id>
             <properties>
+                <allegro.wsdl.binding>binding-prd.xml</allegro.wsdl.binding>
                 <allegro.wsdl.url>https://webapi.allegro.pl/service.php?wsdl</allegro.wsdl.url>
             </properties>
         </profile>
@@ -172,6 +176,12 @@
                     <wsdlUrls>
                         <wsdlUrl>${allegro.wsdl.url}</wsdlUrl>
                     </wsdlUrls>
+                    <!--wsdlFiles>
+                        <wsdlFile>C:/Users/e-srwn/IdeaProjects/fasttrack1/src/jaxws/allegro-prd.wsdl</wsdlFile>
+                    </wsdlFiles-->
+                    <bindingFiles>
+                        <bindingFile>${allegro.wsdl.binding}</bindingFile>
+                    </bindingFiles>
                     <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
                 </configuration>
             </plugin>

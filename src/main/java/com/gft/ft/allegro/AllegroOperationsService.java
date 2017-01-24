@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -20,14 +19,14 @@ import static org.apache.commons.lang3.StringUtils.upperCase;
  * Created by e-srwn on 2016-09-07.
  */
 @Service
-public class AllegroService {
+public class AllegroOperationsService {
 
-    private static final Logger log = LoggerFactory.getLogger(AllegroService.class);
+    private static final Logger log = LoggerFactory.getLogger(AllegroOperationsService.class);
     public static final String CATEGORY_FILTER_NAME = "category";
     public static final String SEARCH_FILTER_NAME = "search";
 
     @Autowired
-    private ServiceService allegroWS;
+    private AllegroWebService allegroWebService;
 
     @Autowired
     private ObjectFactory objectFactory;
@@ -48,7 +47,7 @@ public class AllegroService {
 
     public Set<Item> findItemsForCategoryAndKeyword(ItemRequest itemRequest) {
         Set<Item> foundItems = new HashSet<>();
-        final ServicePort servicePort = allegroWS.getServicePort();
+        final Allegro servicePort = allegroWebService.getServicePort();
         final DoGetItemsListRequest doGetItemsListRequest = objectFactory.createDoGetItemsListRequest();
         itemRequest.getCategories().forEach(categoryId -> {
             final ArrayOfFilteroptionstype arrayOfFilteroptionstype = objectFactory.createArrayOfFilteroptionstype();
@@ -90,7 +89,7 @@ public class AllegroService {
     }
 
     private List<CatInfoType> getCatsInfo() {
-        final ServicePort servicePort = allegroWS.getServicePort();
+        final Allegro servicePort = allegroWebService.getServicePort();
         final DoGetCatsDataRequest doGetCatsDataRequest = objectFactory.createDoGetCatsDataRequest();
         final DoGetCatsDataResponse doGetCatsDataResponse = servicePort.doGetCatsData(doGetCatsDataRequest);
         return doGetCatsDataResponse.getCatsList().getItem();

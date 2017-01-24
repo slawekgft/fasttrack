@@ -27,7 +27,6 @@ class MessagesServiceIntTest extends Specification {
     def setupSpec() {
         server = new GreenMail(ServerSetupTest.SMTP);
         server.start()
-        println(">>>>>")
     }
 
     def cleanupSpec() {

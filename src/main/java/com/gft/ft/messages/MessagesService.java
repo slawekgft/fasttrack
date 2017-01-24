@@ -1,6 +1,6 @@
 package com.gft.ft.messages;
 
-import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.allegro.AllegroOperationsService;
 import com.gft.ft.commons.PresentationUtils;
 import com.gft.ft.commons.allegro.Item;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
@@ -39,7 +38,7 @@ public class MessagesService {
     private JavaMailSender mailSender;
 
     @Autowired
-    private AllegroService allegroService;
+    private AllegroOperationsService allegroOperationsService;
 
     private class MailModel {
         private String url;

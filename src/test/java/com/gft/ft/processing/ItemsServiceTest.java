@@ -1,6 +1,6 @@
 package com.gft.ft.processing;
 
-import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.allegro.AllegroOperationsService;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.messages.MessagesService;
@@ -37,7 +37,7 @@ public class ItemsServiceTest {
     private RequestsService requestsService;
 
     @Mock
-    private AllegroService allegroService;
+    private AllegroOperationsService allegroOperationsService;
 
     @Mock
     private MessagesService messagesService;
@@ -65,10 +65,10 @@ public class ItemsServiceTest {
         requests.add(createItemRequest().setCategories(100).setKeyword("Java").setEmail(VALID_OTHER_EMAIL).build());
 
         given(requestsService.getAllValidRequests()).willReturn(requests);
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(0))).willReturn(createItemsSet(EMPTY));
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(1))).willReturn(createItemsSet(EMPTY));
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(2))).willReturn(createItemsSet(EMPTY));
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(3))).willReturn(createItemsSet(EMPTY));
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(0))).willReturn(createItemsSet(EMPTY));
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(1))).willReturn(createItemsSet(EMPTY));
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(2))).willReturn(createItemsSet(EMPTY));
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(3))).willReturn(createItemsSet(EMPTY));
 
         // when
         itemsService.periodicalCheck();
@@ -92,10 +92,10 @@ public class ItemsServiceTest {
         userAllSets.addAll(userSet0);
         userAllSets.addAll(userSet1);
         userAllSets.addAll(userSet2);
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(0))).willReturn(userSet0);
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(1))).willReturn(userSet1);
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(2))).willReturn(userSet2);
-        given(allegroService.findItemsForCategoryAndKeyword(requests.get(3))).willReturn(otherUserSet);
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(0))).willReturn(userSet0);
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(1))).willReturn(userSet1);
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(2))).willReturn(userSet2);
+        given(allegroOperationsService.findItemsForCategoryAndKeyword(requests.get(3))).willReturn(otherUserSet);
 
         // when
         itemsService.periodicalCheck();

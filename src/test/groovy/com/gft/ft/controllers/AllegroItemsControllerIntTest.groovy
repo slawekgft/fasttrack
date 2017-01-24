@@ -34,7 +34,7 @@ class AllegroItemsControllerIntTest extends Specification {
 
         where:
         category        | keyword   |   email                   || tooManyItemsFound
-        "Komputery"     | "TEST"    |   "user1@dom.com"         || false
+        "Komputery"     | "TEST"    |   "user1@dom.com"         || true
         "Film"          | "Mozart"  |   "user1@other.dom.com"   || false
     }
 

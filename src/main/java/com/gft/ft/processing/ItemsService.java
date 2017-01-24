@@ -1,6 +1,6 @@
 package com.gft.ft.processing;
 
-import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.allegro.AllegroOperationsService;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.messages.MessagesService;
@@ -30,7 +30,7 @@ public class ItemsService {
     private RequestsService requestsService;
 
     @Autowired
-    private AllegroService allegroService;
+    private AllegroOperationsService allegroOperationsService;
 
     @Autowired
     private MessagesService messagesService;
@@ -66,7 +66,7 @@ public class ItemsService {
 
             private Consumer<ItemRequest> findAvailableItems(final Set<Item> userItems) {
                 return itemRequest -> {
-                    final Set<Item> itemsForCategoryAndKeyword = allegroService.findItemsForCategoryAndKeyword(itemRequest);
+                    final Set<Item> itemsForCategoryAndKeyword = allegroOperationsService.findItemsForCategoryAndKeyword(itemRequest);
                     if (isNotEmpty(itemsForCategoryAndKeyword)) {
                         processedRequests.add(itemRequest);
                     }

@@ -13,11 +13,11 @@ import spock.lang.Specification
 @TestPropertySource(["/application.properties", "/application-dev.properties"])
 class ServiceServiceTest extends Specification {
 
-    def @Shared ServiceService allegroService
+    def @Shared AllegroWebService allegroService
     def @Autowired ObjectFactory objectFactory
 
     def setupSpec() {
-        allegroService = new ServiceService();
+        allegroService = new AllegroWebService();
     }
 
     def callMethod() {

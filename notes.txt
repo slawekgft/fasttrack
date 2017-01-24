@@ -1,0 +1,2 @@
+              xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+              wsdlLocation="https://webapi.allegro.pl/service.php?wsdl"

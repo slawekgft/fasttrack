@@ -1,6 +1,6 @@
 package com.gft.ft.requests;
 
-import com.gft.ft.allegro.AllegroService;
+import com.gft.ft.allegro.AllegroOperationsService;
 import com.gft.ft.commons.DBOperationProblemException;
 import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.ItemRequestStatus;
@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -40,12 +38,12 @@ public class RequestsService {
     private RequestsDAO requestsDAO;
 
     @Autowired
-    private AllegroService allegroService;
+    private AllegroOperationsService allegroOperationsService;
 
     @Transactional
     public void registerRequest(ItemRequest itemRequest) throws DBOperationProblemException, TooMuchItemsFoundException {
         log.debug("registerRequest " + itemRequest);
-        Set<Item> availableItems = allegroService.findItemsForCategoryAndKeyword(itemRequest);
+        Set<Item> availableItems = allegroOperationsService.findItemsForCategoryAndKeyword(itemRequest);
         if (CollectionUtils.size(availableItems) > itemsLimit) {
             throw new TooMuchItemsFoundException(availableItems);
         }
@@ -78,9 +76,9 @@ public class RequestsService {
     @Transactional
     public void invalidateRequests(Set<ItemRequest> requests) {
         requestsDAO.invalidateRequests(requests.stream()
-                                        .mapToLong(mapRequests2Ids())
-                                        .boxed()
-                                        .collect(Collectors.toList()));
+                .mapToLong(ItemRequest::getId)
+                .boxed()
+                .collect(Collectors.toList()));
     }
 
     @Transactional
@@ -91,10 +89,6 @@ public class RequestsService {
     @Transactional
     public void validateNewRequests() {
         requestsDAO.validateNewRequests();
-    }
-
-    private ToLongFunction<ItemRequest> mapRequests2Ids() {
-        return itemRequest -> itemRequest.getId();
     }
 
     private ItemRequestEntity mapRequest2Entity(ItemRequest itemRequest) {
@@ -108,23 +102,21 @@ public class RequestsService {
     private Function<ItemRequestEntity, ItemRequest> mapEntity2ItemRequest() {
         return itemRequestEntity -> {
             Collection<Integer> categories =
-                    Arrays.stream(itemRequestEntity.getCategories().split(","))
-                            .mapToInt(map2Int()).boxed().collect(toList());
+                    Arrays.stream(
+                            itemRequestEntity.getCategories().split(","))
+                            .mapToInt(Integer::parseInt).boxed().collect(toList());
+
             final ItemRequestStatus status = ItemRequestStatus.valueOf(itemRequestEntity.getStatus());
             ItemRequest itemRequest =
                     new ItemRequest(itemRequestEntity.getId(),
-                                    itemRequestEntity.getEmail(),
-                                    itemRequestEntity.getKeyword(),
-                                    categories,
-                                    itemRequestEntity.getCreateDate(),
-                                    status);
+                            itemRequestEntity.getEmail(),
+                            itemRequestEntity.getKeyword(),
+                            categories,
+                            itemRequestEntity.getCreateDate(),
+                            status);
 
             return itemRequest;
         };
-    }
-
-    private ToIntFunction<String> map2Int() {
-        return value -> Integer.parseInt(value);
     }
 
 }
