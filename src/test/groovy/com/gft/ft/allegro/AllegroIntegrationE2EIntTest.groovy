@@ -40,7 +40,8 @@ class AllegroIntegrationE2EIntTest extends Specification {
     public static final String NO_REQUESTS_FOUND_MSG = "No requests found"
     public static final String VALIDATION_ERROR_MESSAGE = "Not Acceptable"
 
-    @Shared def GreenMail mailServer
+    @Shared
+    def GreenMail mailServer
 
     TestRestTemplate template = new TestRestTemplate()
 
@@ -88,7 +89,7 @@ class AllegroIntegrationE2EIntTest extends Specification {
         assertThat(object.toString()).contains(REGISTERED_MSG)
     }
 
-    def "Multiple items registration" () {
+    def "Multiple items registration"() {
         setup:
         def url = FIND_URL + "?cat=" + category + "&name=" + name + "&email=" + user
 
@@ -96,20 +97,25 @@ class AllegroIntegrationE2EIntTest extends Specification {
         def String response = template.postForObject(url, null, String.class)
         println(">>>> " + url)
         println(">>>> " + response)
-        registered == response.contains(REGISTERED_MSG)
-        tooMany == response.contains(TOO_MANY_ITEMS_MSG)
+        if (null != response) {
+            registered = response.contains(REGISTERED_MSG)
+            tooMany = response.contains(TOO_MANY_ITEMS_MSG)
+        } else {
+            response = false
+            tooMany = false
+        }
 
         where:
-        category            |   name            |   user            | registered | tooMany
-        "ks"                | "Brown"           | "user@dom.com"    | false      | false
-        "komiks"            | "t-34 t-55"       | "user@dom.com"    | true       | false
-        "komputery"         | "abcxyzust"       | "user@dom.com"    | true       | false
-        "komputery"         | "atari"           | "user@.com"       | false      | true
-        "komputery"         | "laptop"          | "user@dom.com"    | false      | true
-        "książki"           | "Brown"           | "user@dom.com"    | false      | true
+        category    | name        | user           | registered | tooMany
+        "ks"        | "Brown"     | "user@dom.com" | false      | false
+        "komiks"    | "t-34 t-55" | "user@dom.com" | true       | false
+        "komputery" | "abcxyzust" | "user@dom.com" | true       | false
+        "komputery" | "atari"     | "user@.com"    | false      | true
+        "komputery" | "laptop"    | "user@dom.com" | false      | true
+        "książki"   | "Brown"     | "user@dom.com" | false      | true
     }
 
-    def "Show registered" () {
+    def "Show registered"() {
         given:
         def userEmail = "user@gft.com"
         template.postForObject(FIND_URL + "?cat=komputery&name=abcdefgh&email=" + userEmail, null, String.class)
