@@ -1,6 +1,7 @@
 package com.gft.ft.daos;
 
 import com.gft.ft.daos.entities.ItemRequestEntity;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 
 import static com.gft.ft.commons.ItemRequestStatus.*;
@@ -30,6 +35,18 @@ public class RequestsDAOTest {
 
     @Autowired
     private RequestsDAO requestsDAO;
+
+    @Autowired
+    private DataSource ds;
+
+    @After
+    public void tearDown() {
+        try {
+            clearDatabase(ds);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     public void shouldSave() throws Exception {

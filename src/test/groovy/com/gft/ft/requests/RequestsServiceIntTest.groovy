@@ -5,6 +5,7 @@ import com.gft.ft.commons.ItemRequestStatus
 import com.gft.ft.daos.RequestsDAO
 import com.gft.ft.daos.RequestsDAOTest
 import com.gft.ft.daos.entities.ItemRequestEntity
+import org.junit.Before
 import org.junit.Ignore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
@@ -13,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
+import javax.sql.DataSource
 
-import static com.gft.ft.tests.TestUtil.VALID_EMAIL
-import static com.gft.ft.tests.TestUtil.createItemRequestEntity
+import static com.gft.ft.tests.TestUtil.*
 
 /**
  * Created by e-srwn on 2016-09-16.
@@ -32,7 +33,19 @@ class RequestsServiceIntTest extends Specification {
     private RequestsDAO requestsDAO
 
     @Autowired
+    private DataSource ds;
+
+    @Autowired
     private EntityManager entityManager;
+
+    @Before
+    def "Set UP"() {
+        try {
+            clearDatabase(ds);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     def "InvalidateRequests"() {
         given:

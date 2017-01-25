@@ -4,6 +4,10 @@ import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.daos.entities.ItemRequestEntity;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -24,6 +28,32 @@ public class TestUtil {
     public static final String CAT_BOOKS = "Książki";
 
     private TestUtil() {
+    }
+
+    public static final void clearDatabase(DataSource ds) throws Exception {
+        Connection connection = null;
+        try {
+            connection = ds.getConnection();
+            try {
+                Statement stmt = connection.createStatement();
+                try {
+                    stmt.execute("DELETE FROM ITEM_REQUESTS");
+                    System.out.println("Clear test db: " + stmt.getUpdateCount());
+                    connection.commit();
+                } finally {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new Exception(e);
+            }
+        } catch (SQLException e) {
+            throw new Exception(e);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
 
     public static final ItemBuilder createItem() {

@@ -6,21 +6,27 @@ import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.PresentationUtils;
 import com.gft.ft.commons.TooMuchItemsFoundException;
 import com.gft.ft.commons.allegro.Item;
+import com.gft.ft.commons.dtos.ValidationErrorInfoDTO;
 import com.gft.ft.requests.RequestsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -28,11 +34,13 @@ import java.util.function.Function;
 
 import static com.gft.ft.commons.PresentationUtils.list;
 import static com.gft.ft.commons.PresentationUtils.paragraph;
+import static org.apache.commons.lang3.StringUtils.length;
 
 /**
  * Created by e-srwn on 2016-09-06.
  */
 @RestController
+@Validated
 public class AllegroItemsController {
 
     public static final String WEB_ITEMS_REQUEST_PROBLEM_MSG = "web.items.registration_problem";
@@ -56,9 +64,18 @@ public class AllegroItemsController {
     private AllegroOperationsService allegroOperationsService;
 
     @RequestMapping(value = "/find", method = RequestMethod.POST, produces = MediaType.TEXT_HTML_VALUE)
-    public String requestItem(@Length(min = 3, max = 50, message = "Proszę podać poprawną nazwę katalogu!") @RequestParam(value = "cat") String categoryNameFilter,
-                              @Length(min = 3, max = 50, message = "Proszę podać poprawną nazwę przedmiotu!") @RequestParam(value = "name") String keyword,
-                              @Email @RequestParam(value = "email") String email) {
+    public String requestItem(@Valid
+                              @Length(min = 3, max = 50, message = "Proszę podać poprawną nazwę katalogu!")
+                              @RequestParam(value = "cat")
+                                      String categoryNameFilter,
+                              @Valid
+                              @Length(min = 3, max = 50, message = "Proszę podać poprawną nazwę przedmiotu!")
+                              @RequestParam(value = "name")
+                                      String keyword,
+                              @Valid
+                              @Email
+                              @RequestParam(value = "email")
+                                      String email) throws MethodArgumentNotValidException {
 
         log.debug("requestItem for " + email);
         String info = getMessage(WEB_ITEMS_REQUEST_REGISTERED_MSG);
@@ -73,6 +90,16 @@ public class AllegroItemsController {
         }
 
         return paragraph(info);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ValidationErrorInfoDTO processValidationError(ConstraintViolationException exception) {
+        final ValidationErrorInfoDTO validationErrorInfoDTO = new ValidationErrorInfoDTO();
+        validationErrorInfoDTO.addFieldError(exception.getConstraintName(), exception.getMessage());
+
+        return validationErrorInfoDTO;
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
@@ -113,9 +140,9 @@ public class AllegroItemsController {
         if (CollectionUtils.size(items) > 0) {
             StringBuffer listOfItems = new StringBuffer();
             items.stream()
-                .map(mailListElements())
-                .map(PresentationUtils::wrapInBulletTag)
-                .forEach(listOfItems::append);
+                    .map(mailListElements())
+                    .map(PresentationUtils::wrapInBulletTag)
+                    .forEach(listOfItems::append);
             sb.append(list(listOfItems.toString()));
         }
         return sb.toString();

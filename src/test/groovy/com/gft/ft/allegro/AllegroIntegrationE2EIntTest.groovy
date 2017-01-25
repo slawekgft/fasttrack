@@ -2,13 +2,15 @@ package com.gft.ft.allegro
 
 import com.gft.ft.AllegroItemsApplication
 import com.icegreen.greenmail.util.GreenMail
+import org.junit.Ignore
 import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.web.WebAppConfiguration
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -26,6 +28,7 @@ import static org.fest.assertions.Assertions.assertThat
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = [AllegroItemsApplication.class])
 @WebAppConfiguration
 @IntegrationTest
+@Ignore
 @TestPropertySource(["/application.properties", "/application-prd.properties"])
 class AllegroIntegrationE2EIntTest extends Specification {
 
@@ -35,6 +38,7 @@ class AllegroIntegrationE2EIntTest extends Specification {
     public static final String TOO_MANY_ITEMS_MSG = "Many items are available now"
     public static final String REGISTERED_ITEMS_LIST_MSG = "Registered requests"
     public static final String NO_REQUESTS_FOUND_MSG = "No requests found"
+    public static final String VALIDATION_ERROR_MESSAGE = "Not Acceptable"
 
     @Shared def GreenMail mailServer
 
@@ -47,6 +51,30 @@ class AllegroIntegrationE2EIntTest extends Specification {
 
     def cleanupSpec() {
         mailServer.stop()
+    }
+
+    def "Register new item wrong email"() {
+        when:
+        def ResponseEntity<String> responseEntity = template.postForEntity(
+                FIND_URL + "?cat=komputery&name=abcdefgh&email=gft.com",
+                null,
+                String.class)
+
+        then:
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE)
+        assertThat(responseEntity.toString()).contains(VALIDATION_ERROR_MESSAGE)
+    }
+
+    def "Register new item wrong category"() {
+        when:
+        def ResponseEntity<String> responseEntity = template.postForEntity(
+                FIND_URL + "?cat=k&name=abcdefgh&email=user@gft.com",
+                null,
+                String.class)
+
+        then:
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE)
+        assertThat(responseEntity.toString()).contains(VALIDATION_ERROR_MESSAGE)
     }
 
     def "Register new item"() {
@@ -73,8 +101,6 @@ class AllegroIntegrationE2EIntTest extends Specification {
 
         where:
         category            |   name            |   user            | registered | tooMany
-        "komputery"         | "atari"           | "user"            | false      | false
-        "książki"           | "Br"              | "user@dom.com"    | false      | false
         "ks"                | "Brown"           | "user@dom.com"    | false      | false
         "komiks"            | "t-34 t-55"       | "user@dom.com"    | true       | false
         "komputery"         | "abcxyzust"       | "user@dom.com"    | true       | false
