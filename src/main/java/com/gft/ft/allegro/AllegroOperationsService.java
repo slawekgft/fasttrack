@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -34,7 +33,10 @@ public class AllegroOperationsService {
     public Collection<Integer> findCategoriesIds(String categoryNameFilter) {
         final List<CatInfoType> catInfoTypes = getCatsInfo();
 
-        return catInfoTypes.stream().filter(filterByName(categoryNameFilter)).map(categoryId()).collect(Collectors.toList());
+        return catInfoTypes.stream()
+                .filter(catInfoType -> upperCase(catInfoType.getCatName()).contains(upperCase(categoryNameFilter)))
+                .map(catInfoType -> catInfoType.getCatId())
+                .collect(Collectors.toList());
     }
 
     public Collection<String> getCategoriesNames(Set<Integer> categoriesIds) {
@@ -42,7 +44,10 @@ public class AllegroOperationsService {
 
         final List<CatInfoType> catInfoTypes = getCatsInfo();
 
-        return catInfoTypes.stream().filter(filterByIds(categoriesIds)).map(categoryName()).collect(Collectors.toList());
+        return catInfoTypes.stream()
+                .filter(filterByIds(categoriesIds))
+                .map(catInfoType -> catInfoType.getCatName())
+                .collect(Collectors.toList());
     }
 
     public Set<Item> findItemsForCategoryAndKeyword(ItemRequest itemRequest) {
@@ -59,33 +64,23 @@ public class AllegroOperationsService {
             final DoGetItemsListResponse doGetItemsListResponse = servicePort.doGetItemsList(doGetItemsListRequest);
 
             if (doGetItemsListResponse.getItemsCount() > 0) {
-                foundItems.addAll(doGetItemsListResponse.getItemsList().getItem().stream().map(map2Item()).collect(Collectors.toSet()));
+                foundItems.addAll(doGetItemsListResponse.getItemsList().getItem().stream()
+                        .map(itemsListType -> {
+                            Item item = new Item();
+                            item.setId(itemsListType.getItemId());
+                            item.setName(itemsListType.getItemTitle());
+
+                            return item;
+                        })
+                        .collect(Collectors.toSet()));
             }
         });
 
         return foundItems;
     }
 
-    private Function<? super ItemsListType, ? extends Item> map2Item() {
-        return (Function<ItemsListType, Item>) itemsListType -> {
-            Item item = new Item();
-            item.setId(itemsListType.getItemId());
-            item.setName(itemsListType.getItemTitle());
-
-            return item;
-        };
-    }
-
     private FilterOptionsBuilder filterItems() {
         return new FilterOptionsBuilder();
-    }
-
-    private Function<? super CatInfoType, ? extends Integer> categoryId() {
-        return (Function<CatInfoType, Integer>) catInfoType -> catInfoType.getCatId();
-    }
-
-    private Predicate<? super CatInfoType> filterByName(final String categoryNameFilter) {
-        return (Predicate<CatInfoType>) catInfoType -> upperCase(catInfoType.getCatName()).contains(upperCase(categoryNameFilter));
     }
 
     private List<CatInfoType> getCatsInfo() {
@@ -99,10 +94,6 @@ public class AllegroOperationsService {
         return catInfoType -> categories.contains(catInfoType.getCatId());
     }
 
-    static Function<CatInfoType, String> categoryName() {
-        return catInfoType -> catInfoType.getCatName();
-    }
-
     private class FilterOptionsBuilder {
         private List<FilterOptionsType> filters;
 
@@ -110,7 +101,7 @@ public class AllegroOperationsService {
             this.filters = new ArrayList<>();
         }
 
-        public FilterOptionsBuilder addSearch(String id, String ... value) {
+        public FilterOptionsBuilder addSearch(String id, String... value) {
             FilterOptionsType filter = objectFactory.createFilterOptionsType();
             filter.setFilterId(id);
             ArrayOfString filterValues = objectFactory.createArrayOfString();

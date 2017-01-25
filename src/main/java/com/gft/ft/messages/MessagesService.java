@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.gft.ft.commons.PresentationUtils.*;
+import static com.gft.ft.commons.PresentationUtils.list;
+import static com.gft.ft.commons.PresentationUtils.paragraph;
 
 /**
  * Created by e-srwn on 2016-09-07.
@@ -59,15 +59,9 @@ public class MessagesService {
     }
 
     public void mailItemAvailable(String email, Set<Item> userItems) {
-        sendInformationEmail(email, userItems.stream().map(map2MailModel()).collect(Collectors.toSet()));
-    }
-
-    private Function<? super Item, ? extends MailModel> map2MailModel() {
-        return (Function<Item, MailModel>) item -> {
-            String url = AUCTION_URL_ALLEGRO;
-            MailModel mailModel = new MailModel(url, item.getName());
-            return mailModel;
-        };
+        sendInformationEmail(email, userItems.stream()
+                .map(item -> new MailModel(AUCTION_URL_ALLEGRO, item.getName())
+                ).collect(Collectors.toSet()));
     }
 
     private void sendInformationEmail(final String email, final Set<MailModel> model) {
@@ -88,17 +82,13 @@ public class MessagesService {
     private String provideBody(Set<MailModel> model) {
         StringBuffer sb = new StringBuffer();
         model.stream()
-             .map(mailListElements())
-             .map(PresentationUtils::wrapInBulletTag)
-             .forEach(sb::append);
+                .map(mailModel -> getMessage(WEB_ITEMS_MAIL_TEXT_MSG)
+                        .replaceFirst("\\{0\\}", mailModel.getUrl())
+                        .replaceFirst("\\{1\\}", mailModel.getItemName()))
+                .map(PresentationUtils::wrapInBulletTag)
+                .forEach(sb::append);
 
         return paragraph(list(sb.toString()));
-    }
-
-    private Function<? super MailModel,? extends String> mailListElements() {
-        return mailModel -> getMessage(WEB_ITEMS_MAIL_TEXT_MSG)
-                .replaceFirst("\\{0\\}", mailModel.getUrl())
-                .replaceFirst("\\{1\\}", mailModel.getItemName());
     }
 
     private String getMessage(String msg) {

@@ -5,6 +5,7 @@ import com.gft.ft.commons.ItemRequest;
 import com.gft.ft.commons.allegro.Item;
 import com.gft.ft.messages.MessagesService;
 import com.gft.ft.requests.RequestsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
@@ -41,13 +41,11 @@ public class ItemsService {
         final Collection<ItemRequest> allValidRequests = requestsService.getAllValidRequests();
 
         final Map<String, List<ItemRequest>> reqestsByEmail = allValidRequests.stream().collect(Collectors.groupingBy(ItemRequest::getEmail));
-        reqestsByEmail.values().stream().filter(notEmpty()).forEach(checkAndProcessUserRequests());
+        reqestsByEmail.values().stream()
+                .filter(CollectionUtils::isNotEmpty)
+                .forEach(checkAndProcessUserRequests());
         requestsService.invalidateOldRequests();
         requestsService.validateNewRequests();
-    }
-
-    private Predicate<List<ItemRequest>> notEmpty() {
-        return itemRequests -> isNotEmpty(itemRequests);
     }
 
     private Consumer<? super List<ItemRequest>> checkAndProcessUserRequests() {

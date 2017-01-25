@@ -6,7 +6,6 @@ import com.gft.ft.allegrointerface.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 /**
  * Created by e-srwn on 2016-09-13.

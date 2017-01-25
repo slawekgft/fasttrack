@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

@@ -5,7 +5,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 /**
  * Created by e-srwn on 2016-09-09.

@@ -10,9 +10,6 @@ import com.gft.ft.commons.dtos.ValidationErrorInfoDTO;
 import com.gft.ft.requests.RequestsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -30,11 +27,9 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.function.Function;
 
 import static com.gft.ft.commons.PresentationUtils.list;
 import static com.gft.ft.commons.PresentationUtils.paragraph;
-import static org.apache.commons.lang3.StringUtils.length;
 
 /**
  * Created by e-srwn on 2016-09-06.
@@ -121,18 +116,13 @@ public class AllegroItemsController {
     private String itemReqestsList(Collection<ItemRequest> requests) {
         StringBuffer listItems = new StringBuffer();
         requests.stream()
-                .map(commaSeparatedList())
+                .map(ir -> {
+                    final Collection<String> categories = allegroOperationsService.getCategoriesNames(new HashSet<>(ir.getCategories()));
+                    return "'" + ir.getKeyword() + "', {" + StringUtils.join(categories, "|") + "}, " + ir.getStatus();
+                })
                 .map(PresentationUtils::wrapInBulletTag)
                 .forEach(listItems::append);
         return listItems.toString();
-    }
-
-    private Function<ItemRequest, String> commaSeparatedList() {
-        return ir ->
-        {
-            final Collection<String> categories = allegroOperationsService.getCategoriesNames(new HashSet<>(ir.getCategories()));
-            return "'" + ir.getKeyword() + "', {" + StringUtils.join(categories, "|") + "}, " + ir.getStatus();
-        };
     }
 
     private String prepareListInfo(String message, Collection<Item> items) {
@@ -140,15 +130,11 @@ public class AllegroItemsController {
         if (CollectionUtils.size(items) > 0) {
             StringBuffer listOfItems = new StringBuffer();
             items.stream()
-                    .map(mailListElements())
+                    .map(item -> getMessage(WEB_ITEMS_LABEL_ITEM_MSG) + " " + item.getId())
                     .map(PresentationUtils::wrapInBulletTag)
                     .forEach(listOfItems::append);
             sb.append(list(listOfItems.toString()));
         }
         return sb.toString();
-    }
-
-    private Function<? super Item, ? extends String> mailListElements() {
-        return item -> getMessage(WEB_ITEMS_LABEL_ITEM_MSG) + " " + item.getId();
     }
 }
